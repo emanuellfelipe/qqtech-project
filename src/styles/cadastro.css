@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body, html {
+    margin: 0;
+    padding: 0;
+}
+body {
+    display: flex;
+    justify-content: space-between;
+    width: 1440px;
+    height: 1024px;
+    background-color: #B2FDBA;
+    font-family: 'Roboto', sans-serif;
+}
+#menu-lateral {
+    position: fixed;
+    width: 248px;
+    height: 100%;
+    background-color: #FFFFFF;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+#logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#logo {
+    margin-right: 10px;
+}
+
+#logo-icons {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+#logo {
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.menu-icon {
+    width: 24px;
+    height: 24px;
+    margin: 5px;
+}
+.menu-icon:hover {
+    transform: scale(1.1); 
+    transition: transform 0.3s ease; 
+}
+.botao-menu {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #333;
+    background-color: #FFFFFF;
+    width: 100%;
+    text-align: left;
+    border: none;
+    font-weight: bold;
+}
+.botao-menu:hover {
+    transform: scale(1.05); 
+    transition: transform 0.3s ease; 
+}
+.botao-menu.active {
+    background-color: #dde1e6;
+}
+.botao-menu img {
+    margin-right: 10px;
+}
+#main-content {
+    margin-left: 210px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 210px);
+    height: calc(100% - 60px); 
+}
+#formulario {
+    background-color: #fff;
+    padding: 20px 80px;
+    border-radius: 10px;
+    border: 2px solid #01AB45;
+    width: 50%; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+form input, form select {
+    height: 48px;
+    background-color: #F2F4F8;
+    border: 1px solid transparent; 
+    border-bottom: 1px solid #C1C7CD;
+    font-size: 14px;
+    padding-left: 10px; 
+    transition: border-color 0.3s ease; 
+}
+
+form input:focus, form select:focus {
+    border-color: #01AB45; 
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none; 
+}
+#senha-div {
+    position: relative; 
+}
+
+#senha {
+    width: 90%;
+}
+
+#senha-botao {
+    position: absolute; 
+    top: 50%; 
+    right: 10px; 
+    transform: translateY(-50%); 
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+input.invalid {
+    border-color: red;
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none;
+}
+select#perfis option {
+    padding: 20px; 
+}
+#botao-cadastrar {
+    background-color: #01AB45; 
+    color: white;
+    border-radius: 8px;
+    width: 290px;
+    height: 44px;
+    font-weight: bold;
+    border: none;
+}
+#botao-cadastrar:hover {
+    transform: scale(1.1); 
+    transition: transform 0.2s ease; 
+}
+#botao-cancelar {
+    background-color: white;
+    color: #01AB45; 
+    border: 2px solid #01AB45;
+    border-radius: 8px;
+    width: 290px;
+    height: 44px;
+    font-weight: bold;
+}
+#botao-cancelar:hover {
+    transform: scale(1.1); 
+    transition: transform 0.2s ease; 
+}
+#botoes {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 248px;
+    width: calc(100% - 282px);
+    height: 60px;   
+    background-color: #025400;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+}
+
+#social-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+#social-icons img {
+    width: 24px; 
+    height: 24px;
+    object-fit: contain;
+    transition: transform 0.2s ease; 
+}
+
+#social-icons img:hover {
+    transform: scale(1.1); 
+}
