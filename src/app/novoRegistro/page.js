@@ -132,7 +132,11 @@ export default function CadastroPage() {
                                 autoComplete="off"
                             />
                             <button type="button" id="senha-botao" onClick={togglePasswordVisibility}>
-                                <Image src="/images/eye-icon.png" id="eye-icon" alt="Ícone de olho" width={20} height={20} />
+                                <Image 
+                                src={passwordVisible ? "/images/eye-icon-green.png" : "/images/eye-icon.png"}
+                                id="eye-icon" 
+                                alt={passwordVisible ? "Ocultar senha" : "Mostrar senha"} 
+                                width={20} height={20} />
                             </button>
                         </div>
                         <label htmlFor="perfis">Perfis Associados</label>

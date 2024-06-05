@@ -1,38 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-body {
+* {
     margin: 0;
     padding: 0;
-    background-color: #B2FDBA;
+    box-sizing: border-box;
+}
+
+body {
     font-family: 'Roboto', sans-serif;
+    background-color: #B2FDBA;
 }
 
 .login {
     width: 100%;
     position: relative;
-    background-color: #B2FDBA;
-    min-height: 1024px;
+    background-color: #b2fdba;
+    height: 1024px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-size: 42px;
-    color: #21272A;
+    color: #21272a;
+    font-family: Roboto;
 }
 
 .page-content {
-    width: 684px;
+    width: 600px; /* Ajuste o tamanho conforme necessário */
     border-radius: 16px;
-    background-color: #FFFFFF;
-    border: 2px solid #01AB45;
+    background-color: #fff;
+    border: 2px solid #01ab45;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 80px;
+    padding: 80px; /* Reduzir o padding */
     gap: 24px;
+}
+
+.queroquerologo-icon {
+    width: 400px; /* Ajuste o tamanho conforme necessário */
+    position: relative;
+    height: auto; /* Ajuste a altura conforme necessário */
+    object-fit: cover;
+    cursor: pointer;
 }
 
 .sep {
@@ -47,22 +60,42 @@ body {
     align-self: stretch;
     position: relative;
     line-height: 110%;
-    font-size: 24px;
+}
+
+.top {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .paragraph {
     align-self: stretch;
     position: relative;
-    font-size: 16px;
+    font-size: 18px;
     line-height: 140%;
 }
 
-.formulario {
+.section-text {
     align-self: stretch;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.label {
+    align-self: stretch;
+    position: relative;
+    line-height: 140%;
+}
+
+.text {
+    flex: 1;
+    position: relative;
+    line-height: 140%;
 }
 
 .label-and-field {
@@ -74,10 +107,99 @@ body {
     gap: 8px;
 }
 
-.label-nome {
+.text-field {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.icon-jam-icons-outline-l {
+    width: 24px;
+    position: relative;
+    height: 24px;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.field,
+.field1 {
+    align-self: stretch;
+    background-color: #f2f4f8;
+    border-bottom: 1px solid #c1c7cd;
+    box-sizing: border-box;
+    height: 48px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 16px;
+    font-size: 16px;
+    color: #697077;
+    
+}
+.field:focus-within,
+.field1:focus-within {
+    border: 2px solid #01AB45; /* Cor verde para o foco */
+    outline: none;
+    border-radius: 4px;
+}
+input,
+select {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    color: #000000;
+}
+
+input:focus,
+select:focus {
+    border-color: #01AB45;
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none;
+}
+
+.controls {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.label-name {
     position: relative;
     line-height: 140%;
-    font-size: 14px;
+}
+
+.controls-with-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.forgot-password {
+    flex: 1;
+    position: relative;
+    line-height: 140%;
+    color: #01ab45;
+    text-align: right;
+    cursor: pointer;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #019639;
+    text-decoration: underline;
+    
 }
 
 .group {
@@ -89,28 +211,11 @@ body {
     gap: 16px;
 }
 
-.controlsWithLabel {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-}
-
-.button {
-    align-self: stretch;
-    border-radius: 16px;
-    background-color: #01AB45;
-    border: 2px solid #B2FDBA;
-    box-sizing: border-box;
-    height: 48px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 16px 12px;
-    font-size: 16px;
-    color: #FFFFFF;
+.button-text {
+    position: relative;
+    letter-spacing: 0.5px;
+    line-height: 100%;
+    font-weight: 500;
 }
 
 .text-container {
@@ -121,58 +226,42 @@ body {
     padding: 0px 16px;
 }
 
-button {
-    background: none;
-    border: none;
+.button {
+    align-self: stretch;
+    border-radius: 12px;
+    background-color: #01ab45;
+    height: 48px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
     cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #019639;
+}
+
+.form-2-fields-checkbox-b {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 0px 0px;
+    gap: 16px;
+    text-align: left;
+    font-size: 14px;
 }
 
 .sep2 {
     align-self: stretch;
     position: relative;
-    border-top: 1px solid #FFFFFF;
+    border-top: 1px solid #fff;
     box-sizing: border-box;
     height: 1px;
-}
-
-form input, form select {
-    height: 48px;
-    background-color: #F2F4F8;
-    border: 1px solid transparent; 
-    border-bottom: 1px solid #C1C7CD;
-    font-size: 14px;
-    padding-left: 10px; 
-    transition: border-color 0.3s ease; 
-}
-
-form input:focus, form select:focus {
-    border-color: #01AB45; 
-    border-radius: 4px;
-    border-width: 2px;
-    outline: none; 
-}
-
-.invalid {
-    border-color: red;
-    border-radius: 4px;
-    border-width: 2px;
-    outline: none;
-}
-
-#senha-div {
-    position: relative; 
-}
-
-#senha {
-    width: 90%;
-}
-
-#senha-botao {
-    position: absolute; 
-    top: 50%; 
-    right: 10px; 
-    transform: translateY(-50%); 
-    background: none;
-    border: none;
-    cursor: pointer;
 }
