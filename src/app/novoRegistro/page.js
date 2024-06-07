@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
+import Sidebar from '/src/components/Sidebar';
+import Footer from '/src/components/Footer';
 import "/src/styles/cadastro.css";
 
 export default function CadastroPage() {
@@ -13,7 +15,6 @@ export default function CadastroPage() {
     const [senha, setSenha] = useState('');
     const [perfis, setPerfis] = useState([]);
     const [perfil, setSelectedPerfil] = useState('');
-    
 
     useEffect(() => {
         async function fetchPerfis() {
@@ -54,30 +55,7 @@ export default function CadastroPage() {
 
     return (
         <>
-            <div id="menu-lateral">
-            <div id="menu-lateral">
-        <div id="logo-container">
-          <Image src="/images/logo.png" id="logo" alt="Logo" width={181} height={39} />
-        </div>
-        <div className="menu-icons">
-          <Image src="/images/menu-icon.png" className="menu-icon" alt="Menu Icon" width={20} height={20} />
-          <Image src="/images/settings-icon.png" className="menu-icon" alt="Settings Icon" width={20} height={20} />
-        </div>
-        <button className="botao-menu">
-          <Image src="/images/home-icon.png" alt="Home" width={20} height={20} /> Home
-        </button>
-        <button className="botao-menu">
-          <Image src="/images/modules-icon.png" alt="Modules" width={20} height={20} /> Módulos
-        </button>
-        <button className="botao-menu active">
-          <Image src="/images/profiles-icon.png" alt="Users" width={20} height={20} /> Usuários
-        </button>
-        <button className="botao-menu">
-          <Image src="/images/perfis-icon.png" alt="Profiles" width={20} height={20} /> Perfis
-        </button>
-      </div>
-            </div>
-
+            <Sidebar />
             <div id="main-content">
                 <div id="formulario">
                     <Image src="/images/logo-forms.png" alt="Forms Logo" width={400} height={75} />
@@ -158,17 +136,7 @@ export default function CadastroPage() {
                     </form>
                 </div>
             </div>
-
-            <footer>
-              <p>Lojas Quero Quero @ 2024. Todos os Direitos Reservados</p>
-              <div id="social-icons">
-                <Image src="/images/facebook-icon.png" alt="Facebook" width={20} height={20} />
-                <Image src="/images/twitter-icon.png" alt="Twitter" width={20} height={20} />
-                <Image src="/images/instagram-icon.png" alt="Instagram" width={20} height={20} />
-                <Image src="/images/linkedin-icon.png" alt="LinkedIn" width={20} height={20} />
-                <Image src="/images/youtube-icon.png" alt="YouTube" width={20} height={20} />
-              </div>
-            </footer>
+            <Footer />
         </>
     );
 }

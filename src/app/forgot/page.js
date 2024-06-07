@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import Head from 'next/head';
-import '/src/styles/forgotPassword.css'; // Certifique-se de que o caminho esteja correto
+import '/src/styles/forgotPassword.css';
 
 export default function ForgotPasswordPage() {
     return (

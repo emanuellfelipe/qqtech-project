@@ -3,6 +3,11 @@ import Image from 'next/image';
 import "/src/styles/homeAdmin.css";
 
 export default function HomeAdminPage() {
+
+  const redirectToPage = (page) => {
+    window.location.href = page;
+  };
+
   return (
     <>
       <header>
@@ -11,9 +16,9 @@ export default function HomeAdminPage() {
         </div>
         <nav>
           <ul>
-            <li className="menu"><a href="#">Perfis</a></li>
-            <li className="menu"><a href="#">Usuários</a></li>
-            <li className="menu"><a href="#">Módulos</a></li>
+            <li className="menu"><button onClick={() => redirectToPage('/perfis')}>Perfis</button></li>
+            <li className="menu"><button onClick={() => redirectToPage('/registros')}>Usuários</button></li>
+            <li className="menu"><button onClick={() => redirectToPage('/modulos')}>Módulos</button></li>
           </ul>
         </nav>
         <div id="icons">
@@ -30,19 +35,19 @@ export default function HomeAdminPage() {
             <Image src="/images/usuario-logo.png" alt="Usuários" width={154} height={110} />
             <h2>Editar e Criar Usuários</h2>
             <p>Crie novos usuários ou edite existentes</p>
-            <a href="#" className="button-link">Ir Para <Image src="/images/arrow-white.png" className="icon" alt="Arrow Icon" width={20} height={20} /></a>
+            <button onClick={() => redirectToPage('/registros')} className="button-link">Ir Para <Image src="/images/arrow-white.png" className="icon" alt="Arrow Icon" width={20} height={20} /></button>
           </div>
           <div className="option">
             <Image src="/images/modulos-main.png" alt="Módulos" width={154} height={110} />
             <h2>Criar e Editar Módulos</h2>
             <p>Crie funções, módulos e transações</p>
-            <a href="#" className="button-link">Ir Para <Image src="/images/arrow-white.png" className="icon" alt="Arrow Icon" width={20} height={20} /></a>
+            <button onClick={() => redirectToPage('/modulos')} className="button-link">Ir Para <Image src="/images/arrow-white.png" className="icon" alt="Arrow Icon" width={20} height={20} /></button>
           </div>
           <div className="option">
             <Image src="/images/perfis-main.png" alt="Perfis" width={154} height={110} />
             <h2>Criar e Editar <span className="block">Perfis</span></h2>
             <p>Crie novos perfis ou edite existentes</p>
-            <a href="#" className="button-link">Ir Para <Image src="/images/arrow-white.png" className="icon" alt="Arrow Icon" width={20} height={20} /></a>
+            <button onClick={() => redirectToPage('/perfis')} className="button-link">Ir Para <Image src="/images/arrow-white.png" className="icon" alt="Arrow Icon" width={20} height={20} /></button>
           </div>
         </section>
       </main>

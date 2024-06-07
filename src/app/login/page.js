@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import '/src/styles/login.css'; // Importação do estilo
+import '/src/styles/login.css';
 
 export default function LoginPage() {
   const [passwordVisible, setPasswordVisible] = useState(false);

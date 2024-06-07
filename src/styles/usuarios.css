@@ -1,0 +1,111 @@
+/* Reset básico e fontes */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+body, html {
+    margin: 0;
+    padding: 0;
+}
+body {
+    display: flex;
+    justify-content: space-between;
+    width: 1440px;
+    height: 1024px;
+    background-color: #B2FDBA;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Estilos do conteúdo principal */
+#main-content {
+    margin-left: 400px; /* Aumenta o espaçamento entre o menu e o card */
+    margin-bottom: 60px; /* Espaço para o footer */
+    margin-top: 60px;
+    padding-left: 60px;
+    padding-right: 60px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    background-color: #FFFFFF; /* Cor de fundo do card */
+    border: 2px solid #01AB45; /* Borda verde do card */
+    border-radius: 16px; /* Bordas arredondadas */
+    width: calc(70% - 260px - 60px); /* Largura ajustada */
+    height: 50%; /* Altura automática */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Mantém o botão na parte debaixo */
+}
+
+#main-content h1 {
+    color: #000000;
+    text-align: center; /* Centraliza o título */
+    margin-bottom: 20px;
+}
+
+#search-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    position: relative; /* Permite posicionar o ícone de pesquisa */
+}
+
+#search-title {
+    color: #01AB45;
+    border-bottom: 2px solid #01AB45;
+    width: auto; /* Define a largura automática para o título */
+    font-size: 16px;
+    padding-top: 16px;
+}
+
+#search-container {
+    position: relative;
+}
+
+#search-icon {
+    position: absolute;
+    right: 10px;
+    color: #ccc;
+    width: 18px;
+    height: 18px;
+    padding-top: 8px;
+}
+
+#main-content input[type="search"] {
+    padding: 10px 30px 10px 10px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    border-radius: 0;
+    width: auto;
+    outline: none;
+}
+
+#main-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#main-content th, #main-content td {
+    text-align: left;
+    padding: 10px; /* Padding interno maior */
+    border-bottom: 1px solid #ccc;
+}   
+
+#main-content th {
+    background-color: #f2f2f2;
+    height: 30px; /* Altura maior para o cabeçalho da tabela */
+    font-size: 14px;
+}
+
+#criar-usuario {
+    padding: 10px 20px;
+    background-color: #01ab45;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 40%; /* Largura menos larga */
+    align-self: center; /* Centraliza o botão */
+    margin-top: auto; /* Garante que o botão fique na parte debaixo */
+}
+
+#criar-usuario:hover {
+    background-color: #019639;
+}

@@ -1,7 +1,7 @@
 // src/api/register.js
 const express = require('express');
 const User = require('../../models/Usuario');
-const Perfil = require('../../models/Perfil'); // Importe o modelo Perfil
+const Perfil = require('../../models/Perfil'); 
 
 const router = express.Router();
 

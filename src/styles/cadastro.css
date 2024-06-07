@@ -12,70 +12,7 @@ body {
     background-color: #B2FDBA;
     font-family: 'Roboto', sans-serif;
 }
-#menu-lateral {
-    position: fixed;
-    width: 248px;
-    height: 100%;
-    background-color: #FFFFFF;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0;
-}
-#logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-}
 
-#logo {
-    margin-right: 10px;
-}
-
-#logo-icons {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-}
-#logo {
-    margin-top: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
-}
-.menu-icon {
-    width: 24px;
-    height: 24px;
-    margin: 5px;
-}
-.menu-icon:hover {
-    transform: scale(1.1); 
-    transition: transform 0.3s ease; 
-}
-.botao-menu {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    color: #333;
-    background-color: #FFFFFF;
-    width: 100%;
-    text-align: left;
-    border: none;
-    font-weight: bold;
-}
-.botao-menu:hover {
-    transform: scale(1.05); 
-    transition: transform 0.3s ease; 
-}
-.botao-menu.active {
-    background-color: #dde1e6;
-}
-.botao-menu img {
-    margin-right: 10px;
-}
 #main-content {
     margin-left: 210px;
     display: flex;
@@ -175,33 +112,4 @@ select#perfis option {
     gap: 10px;
     margin-top: 20px;
 }
-footer {
-    position: fixed;
-    bottom: 0;
-    left: 248px;
-    width: calc(100% - 282px);
-    height: 60px;   
-    background-color: #025400;
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 24px;
-}
 
-#social-icons {
-    display: flex;
-    align-items: center;
-    gap: 10px; 
-}
-
-#social-icons img {
-    width: 24px; 
-    height: 24px;
-    object-fit: contain;
-    transition: transform 0.2s ease; 
-}
-
-#social-icons img:hover {
-    transform: scale(1.1); 
-}

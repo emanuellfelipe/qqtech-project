@@ -1,0 +1,30 @@
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 248px;
+    width: calc(100% - 282px);
+    height: 60px;   
+    background-color: #025400;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+}
+
+#social-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+#social-icons img {
+    width: 24px; 
+    height: 24px;
+    object-fit: contain;
+    transition: transform 0.2s ease; 
+}
+
+#social-icons img:hover {
+    transform: scale(1.1); 
+}

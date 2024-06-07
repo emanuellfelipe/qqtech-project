@@ -1,10 +1,14 @@
 // models/Usuario.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db'); // Ajuste o caminho conforme necessário
-const Perfil = require('./Perfil'); // Importe o modelo Perfil
+const sequelize = require('../config/db'); 
+const Perfil = require('./Perfil'); 
 
 const Usuario = sequelize.define('Usuario', {
-    // Atributos do modelo
+    id_usuario: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     matricula: {
         type: DataTypes.INTEGER,
         allowNull: false,
