@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.form-input, .form-select {
+    height: 48px;
+    background-color: #F2F4F8;
+    border: 1px solid transparent; 
+    border-bottom: 1px solid #C1C7CD;
+    font-size: 14px;
+    padding-left: 10px; 
+    transition: border-color 0.3s ease; 
+}
+
+.form-input:focus, .form-select:focus {
+    border-color: #01AB45; 
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none; 
+}
+
+.form-input.invalid {
+    border-color: red;
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none;
+}

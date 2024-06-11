@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #B2FDBA;
+    font-family: 'Roboto', sans-serif;
+}
+
+.config-page {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+#main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: calc(100% - 210px);
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-left: 210px;
+}
+
+#main-content .title {
+    margin-bottom: 20px;
+    font-size: 36px;
+    font-weight: bold;
+    text-align: left;
+    max-width: 600px;
+    padding-left: 60px;
+}
+
+.config-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.config-box {
+    background-color: #fff;
+    padding: 20px 40px;
+    border-radius: 10px;
+    border: 2px solid #01AB45;
+    width: 100%;
+    max-width: 600px;
+}
+.user-info-title {
+    font-size: 20px;
+    margin-top: -5px;
+    font-weight: bold; /* Adicionando negrito */
+    text-align: left;
+    margin-left: -20px;
+}
+.profile-photo-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-thumb {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.button-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}   
+.button-group .insert-button {
+    background-color: #ffffff;
+    color: #01AB45;
+    border: 1px solid #01AB45;
+    padding: 10px 15px; /* Reduzindo o padding */
+    cursor: pointer;
+    margin-bottom: 10px;
+    width: auto; /* Largura automática */
+}
+
+.button-group .insert-button:hover {
+    background-color: #01AB45;
+    color: white;
+}
+
+.button-group .remove-button {
+    color: blue;
+    border: none;
+    background-color: #ffffff;
+}
+
+.button-group .remove-button:hover {
+    color: darkblue;
+    text-decoration: underline;
+}
+
+.image-requirements {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-info-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.fields-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.label-and-field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+.field input,
+.field select {
+    width: calc(100% - 20px); /* Definindo a largura dos inputs e selects como 100% menos a margem interna */
+    padding: 10px; /* Adicionando preenchimento interno para os inputs */
+    border-bottom: 1px solid #ccc; /* Adicionando uma borda para os inputs */
+    font-size: 16px; /* Definindo o tamanho da fonte para os inputs */
+    box-sizing: border-box; /* Mantendo o tamanho total incluindo a borda e o preenchimento */
+    margin-bottom: 10px; /* Adicionando margem inferior para espaçamento entre os inputs */
+}
+.field {
+    width: 100%;
+}
+.field1 {
+    position: relative;
+  }
+  
+  .field1 input {
+    width: 100%;
+    height: 48px;
+    padding: 10px; 
+    border: 1px solid transparent; 
+    border-bottom: 1px solid #C1C7CD; /* Adicionei uma borda padrão para o input */ /* Adicionei um raio de borda para suavizar as bordas */
+    font-size: 14px;
+    box-sizing: border-box; 
+    margin-bottom: 10px; 
+    background-color: #F2F4F8; /* Adicionando o background cinza */
+    outline: none; /* Removendo a borda de foco padrão */
+}
+
+.field1 input:focus {
+    border-color: #01AB45; /* Mudando a cor da borda para verde quando o input é selecionado */
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none; 
+}
+
+.field1 button {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.botao-salvar {
+    background-color: #01AB45;
+    color: white;
+    border-radius: 8px;
+    width: 140px;
+    height: 44px;
+    font-weight: bold;
+    border: none;
+}
+
+.botao-salvar:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.botao-sair {
+    background-color: white;
+    color: #01AB45;
+    border: 2px solid #01AB45;
+    border-radius: 8px;
+    width: 140px;
+    height: 44px;
+    font-weight: bold;
+}
+
+.botao-sair:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+#botoes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+    gap: 10px;
+}

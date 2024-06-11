@@ -1,7 +1,7 @@
 // models/Usuario.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db'); 
-const Perfil = require('./Perfil'); 
+const sequelize = require('../config/db');
+const Perfil = require('./Perfil');
 
 const Usuario = sequelize.define('Usuario', {
     id_usuario: {
@@ -31,21 +31,17 @@ const Usuario = sequelize.define('Usuario', {
     nome_completo: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    id_perfil: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Perfil,
-            key: 'id_perfil'
-        }
     }
 }, {
     tableName: 'usuario',
     timestamps: false
 });
 
-// Defina o relacionamento
-Usuario.belongsTo(Perfil, { foreignKey: 'id_perfil' });
+// Associação Muitos-Para-Muitos com a tabela 'perfil'
+Usuario.belongsToMany(Perfil, {
+    through: 'perfil_usuario',
+    foreignKey: 'id_usuario',
+    otherKey: 'id_perfil'
+});
 
 module.exports = Usuario;
