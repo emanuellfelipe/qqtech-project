@@ -1,4 +1,4 @@
-// models/Perfil.js
+// Perfil.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
@@ -17,9 +17,8 @@ const Perfil = sequelize.define('Perfil', {
         type: DataTypes.TEXT
     }
 }, {
-    tableName: 'perfil', // Especifica o nome da tabela em minúsculas
-    freezeTableName: true // Impede que o Sequelize pluralize o nome da tabela
+    tableName: 'perfil',
+    freezeTableName: true
 });
 
 module.exports = Perfil;
-;

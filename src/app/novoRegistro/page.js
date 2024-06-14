@@ -44,7 +44,7 @@ export default function CadastroPage() {
                 nome_usuario,
                 email,
                 senha,
-                perfil: perfil
+                perfil: [perfil]
             });
             // Redirecionar para a página de sucesso ou fazer outra ação necessária
         } catch (error) {

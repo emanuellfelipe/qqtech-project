@@ -20,4 +20,5 @@ const Modulo = sequelize.define('modulos', {
     timestamps: false,
 });
 
+
 module.exports = Modulo;
