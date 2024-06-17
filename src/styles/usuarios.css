@@ -99,6 +99,19 @@ body {
     font-size: 14px;
 }
 
+.action-button {
+    background: none;
+    border: none;
+    color: #01AB45;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.action-button:hover {
+    color: #960101;
+}
+
 #criar-usuario {
     padding: 10px 20px;
     background-color: #01ab45;

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Head from 'next/head';
-import { FaSearch } from 'react-icons/fa'; 
+import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa'; 
 import '/src/styles/perfis.css'; 
 import Footer from '/src/components/Footer'; 
 import Sidebar from '/src/components/Sidebar'; 
@@ -15,23 +15,34 @@ export default function PerfisAdminPage() {
     const [newPerfil, setNewPerfil] = useState({ nome_perfil: '', descricao: '', modulos: [] });
     const [modulos, setModulos] = useState([]);
     const [selectedModulos, setSelectedModulos] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingPerfilId, setEditingPerfilId] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Chamada à API para buscar os perfis
         const fetchPerfis = async () => {
             try {
                 const response = await fetch('/api/perfis');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar perfis');
+                }
                 const data = await response.json();
-                setPerfis(data.data);
+                setPerfis(data.data || []);
+                setIsLoading(false);
             } catch (error) {
                 console.error('Erro ao buscar perfis:', error);
+                setError(error);
+                setIsLoading(false);
             }
         };
 
-        // Chamada à API para buscar os módulos
         const fetchModulos = async () => {
             try {
                 const response = await fetch('/api/modulos');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar módulos');
+                }
                 const data = await response.json();
                 setModulos(data);
             } catch (error) {
@@ -47,10 +58,13 @@ export default function PerfisAdminPage() {
         setSearchTerm(event.target.value);
     };
 
-    const handleCreatePerfil = async () => {
+    const handleCreateOrEditPerfil = async () => {
+        const url = isEditing ? `/api/perfis/${editingPerfilId}` : '/api/perfis';
+        const method = isEditing ? 'PUT' : 'POST';
+
         try {
-            const response = await fetch('/api/perfis', {
-                method: 'POST',
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -58,18 +72,26 @@ export default function PerfisAdminPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao criar perfil');
+                throw new Error(isEditing ? 'Erro ao editar perfil' : 'Erro ao criar perfil');
             }
 
             const data = await response.json();
-            const perfilCriado = data.data;
+            const perfilAtualizado = data.data;
 
-            setPerfis([...perfis, perfilCriado]);
-            setIsModalOpen(false); // Fecha o modal após criar o perfil
-            setNewPerfil({ nome_perfil: '', descricao: '', modulos: [] }); // Limpa os campos do novo perfil
-            alert('Perfil criado com sucesso!'); // Exibe uma mensagem de sucesso
+            if (isEditing) {
+                setPerfis(perfis.map(perfil => (perfil.id_perfil === editingPerfilId ? perfilAtualizado : perfil)));
+            } else {
+                setPerfis([...perfis, perfilAtualizado]);
+            }
+
+            setIsModalOpen(false);
+            setNewPerfil({ nome_perfil: '', descricao: '', modulos: [] });
+            setSelectedModulos([]);
+            setIsEditing(false);
+            setEditingPerfilId(null);
+            alert(isEditing ? 'Perfil editado com sucesso!' : 'Perfil criado com sucesso!');
         } catch (error) {
-            console.error('Erro ao criar perfil:', error);
+            console.error(isEditing ? 'Erro ao editar perfil:' : 'Erro ao criar perfil:', error);
         }
     };
 
@@ -78,21 +100,55 @@ export default function PerfisAdminPage() {
         setNewPerfil({ ...newPerfil, [name]: value });
     };
 
-    const filteredPerfis = perfis.filter(perfil =>
-        perfil &&
-        (perfil.descricao && perfil.descricao.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (perfil.nome_perfil && perfil.nome_perfil.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const handleEditPerfil = (perfil) => {
+        setNewPerfil({ 
+            nome_perfil: perfil.nome_perfil, 
+            descricao: perfil.descricao, 
+            modulos: perfil.modulos ? perfil.modulos.map(modulo => modulo.id_modulo) : [] 
+        });
+        setSelectedModulos(perfil.modulos ? perfil.modulos.map(modulo => ({ value: modulo.id_modulo, label: modulo.nome_modulo })) : []);
+        setIsEditing(true);
+        setEditingPerfilId(perfil.id_perfil);
+        setIsModalOpen(true);
+    };
+
+    const handleDeletePerfil = async (id_perfil) => {
+        if (confirm('Tem certeza de que deseja excluir este perfil?')) {
+            try {
+                await fetch(`/api/perfis?id_perfil=${id_perfil}`, {
+                    method: 'DELETE'
+                });
+                setPerfis(perfis.filter(perfil => perfil.id_perfil !== id_perfil));
+            } catch (error) {
+                console.error('Erro ao excluir perfil:', error);
+                alert('Erro ao excluir perfil. Tente novamente.');
+            }
+        }
+    };
 
     const handleChangeSelect = (selectedOptions) => {
         setSelectedModulos(selectedOptions);
         setNewPerfil({ ...newPerfil, modulos: selectedOptions.map(option => option.value) });
     };
 
+    const filteredPerfis = perfis.filter(perfil =>
+        perfil &&
+        ((perfil.descricao && perfil.descricao.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (perfil.nome_perfil && perfil.nome_perfil.toLowerCase().includes(searchTerm.toLowerCase())))
+    );
+
     const options = modulos.map(modulo => ({
         value: modulo.id_modulo,
         label: modulo.nome_modulo,
     }));
+
+    if (isLoading) {
+        return <div>Carregando...</div>;
+    }
+
+    if (error) {
+        return <div>Erro ao carregar dados: {error.message}</div>;
+    }
 
     return (
         <>
@@ -121,6 +177,7 @@ export default function PerfisAdminPage() {
                         <tr>
                             <th>Nome do Perfil</th>
                             <th>Descrição</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -128,6 +185,14 @@ export default function PerfisAdminPage() {
                             <tr key={perfil.id_perfil}>
                                 <td>{perfil.nome_perfil}</td>
                                 <td>{perfil.descricao}</td>
+                                <td>
+                                    <button className="action-button" onClick={() => handleEditPerfil(perfil)}>
+                                        <FaEdit />
+                                    </button>
+                                    <button className="action-button" onClick={() => handleDeletePerfil(perfil.id_perfil)}>
+                                        <FaTrash />
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -139,44 +204,37 @@ export default function PerfisAdminPage() {
             {isModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
-                        <span className="close" onClick={() => setIsModalOpen(false)}>&times;</span>
-                        <h2>Criar Novo Perfil</h2>
-                        <form>
-                            <label>
-                                Nome do Perfil:
-                                <input 
-                                    type="text" 
-                                    name="nome_perfil" 
-                                    value={newPerfil.nome_perfil} 
-                                    onChange={handleInputChange} 
-                                    style={{ backgroundColor: '#f2f4f8', borderBottom: '1px solid #D0D5DD' }}
-                                />
-                            </label>
-                            <label>
-                                Descrição:
-                                <input 
-                                    type="text" 
-                                    name="descricao" 
-                                    value={newPerfil.descricao} 
-                                    onChange={handleInputChange} 
-                                    style={{ backgroundColor: '#f2f4f8', borderBottom: '1px solid #D0D5DD' }}
-                                />
-                            </label>
-                            <label>
-                                Módulos:
-                                <Select
-                                    value={selectedModulos}
-                                    onChange={handleChangeSelect}
-                                    options={options}
-                                    isMulti
-                                    placeholder="Selecione os módulos..."
-                                />
-                            </label>
-                            <div className="modal-buttons">
-                                <button type="button" className="cancel" onClick={() => setIsModalOpen(false)}>Cancelar</button>
-                                <button type="button" onClick={handleCreatePerfil}>Salvar</button>
-                            </div>
-                        </form>
+                        <span className="close" onClick={() => { setIsModalOpen(false); setIsEditing(false); }}>&times;</span>
+                        <h2>{isEditing ? 'Editar Perfil' : 'Criar Perfil'}</h2>
+                        <div className="modal-body">
+                            <label htmlFor="nome_perfil">Nome do Perfil:</label>
+                            <input 
+                                type="text" 
+                                id="nome_perfil" 
+                                name="nome_perfil" 
+                                value={newPerfil.nome_perfil}
+                                onChange={handleInputChange}
+                            />
+                            <label htmlFor="descricao">Descrição:</label>
+                            <textarea 
+                                id="descricao" 
+                                name="descricao" 
+                                value={newPerfil.descricao}
+                                onChange={handleInputChange}
+                            />
+                            <label htmlFor="modulos">Módulos:</label>
+                            <Select
+                                id="modulos"
+                                name="modulos"
+                                isMulti
+                                value={selectedModulos}
+                                onChange={handleChangeSelect}
+                                options={options}
+                            />
+                        </div>
+                        <div className="modal-footer">
+                            <button onClick={handleCreateOrEditPerfil}>{isEditing ? 'Salvar Alterações' : 'Criar Perfil'}</button>
+                        </div>
                     </div>
                 </div>
             )}

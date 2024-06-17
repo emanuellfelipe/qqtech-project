@@ -23,8 +23,13 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'GET') {
     try {
-      // Obter todos os perfis do banco de dados
-      const perfis = await Perfil.findAll();
+      // Obter todos os perfis do banco de dados, incluindo os módulos associados
+      const perfis = await Perfil.findAll({
+        include: {
+          model: Modulo,
+          through: { attributes: [] }, // Exclui atributos da tabela de junção
+        },
+      });
 
       // Responder com os perfis obtidos
       res.status(200).json({ success: true, data: perfis });

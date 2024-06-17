@@ -11,6 +11,8 @@ import Sidebar from '/src/components/Sidebar';
 export default function ModulosAdminPage() {
     const [modulos, setModulos] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newModulo, setNewModulo] = useState({ nome_modulo: '', descricao: '' });
 
     useEffect(() => {
         // Chamada à API para buscar os módulos
@@ -30,13 +32,26 @@ export default function ModulosAdminPage() {
         setSearchTerm(event.target.value);
     };
 
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewModulo({ ...newModulo, [name]: value });
+    };
+
     const handleCreateModulo = async () => {
-        const nome_modulo = prompt('Nome do módulo:');
-        const descricao = prompt('Descrição do módulo:');
-        
         try {
-            const response = await axios.post('/api/modulos', { nome_modulo, descricao });
+            const response = await axios.post('/api/modulos', newModulo);
             setModulos([...modulos, response.data]);
+            setNewModulo({ nome_modulo: '', descricao: '' }); // Limpa os campos do novo módulo
+            closeModal(); // Fecha o modal após criar o módulo
+            alert('Módulo criado com sucesso!'); // Exibe mensagem de sucesso
         } catch (error) {
             console.error('Erro ao criar módulo:', error);
         }
@@ -87,9 +102,42 @@ export default function ModulosAdminPage() {
                         </tbody>
                     </table>
                 </div>
-                <button id="criar-modulo" onClick={handleCreateModulo}>Criar Novo Módulo</button>
+                <button id="criar-modulo" onClick={openModal}>Criar Novo Módulo</button>
             </div>
             <Footer />
+
+            {isModalOpen && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={closeModal}>&times;</span>
+                        <h2>Criar Novo Módulo</h2>
+                        <form>
+                            <label>
+                                Nome do Módulo:
+                                <input
+                                    type="text"
+                                    name="nome_modulo"
+                                    value={newModulo.nome_modulo}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                            <label>
+                                Descrição:
+                                <input
+                                    type="text"
+                                    name="descricao"
+                                    value={newModulo.descricao}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+                            <div className="modal-buttons">
+                                <button type="button" className="cancel" onClick={closeModal}>Cancelar</button>
+                                <button type="button" onClick={handleCreateModulo}>Salvar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

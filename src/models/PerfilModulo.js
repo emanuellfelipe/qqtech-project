@@ -1,4 +1,3 @@
-// models/PerfilModulo.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const Perfil = require('./Perfil');
@@ -15,17 +14,17 @@ const PerfilModulo = sequelize.define('PerfilModulo', {
     allowNull: false,
     references: {
       model: Perfil,
-      key: 'id_perfil'
-    }
+      key: 'id_perfil',
+    },
   },
   id_modulo: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: Modulo,
-      key: 'id_modulo'
-    }
-  }
+      key: 'id_modulo',
+    },
+  },
 }, {
   tableName: 'perfil_modulo',
   timestamps: false,
@@ -45,3 +44,7 @@ PerfilModulo.associateModules = async function(perfilId, moduloIds) {
 };
 
 module.exports = PerfilModulo;
+
+// Definindo as associações entre os modelos
+Perfil.belongsToMany(Modulo, { through: PerfilModulo, foreignKey: 'id_perfil' });
+Modulo.belongsToMany(Perfil, { through: PerfilModulo, foreignKey: 'id_modulo' });

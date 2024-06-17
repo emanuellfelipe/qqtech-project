@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Sidebar from '/src/components/Sidebar';
 import Footer from '/src/components/Footer';
 import Input from '/src/components/Input'; // Importe o componente Input.js
-import '/src/styles/editRegistro.css';
+import '/src/styles/editUsuario.css';
 
 export default function LoginPage() {
     const [passwordVisible, setPasswordVisible] = useState(false);
