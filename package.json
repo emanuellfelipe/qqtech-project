@@ -11,11 +11,14 @@
   "dependencies": {
     "axios": "^1.7.2",
     "express": "^4.19.2",
+    "jquery": "^3.7.1",
     "next": "14.2.3",
     "pg": "^8.11.5",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
+    "react-select": "^5.8.0",
+    "select2": "^4.1.0-rc.0",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {

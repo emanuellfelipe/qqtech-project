@@ -1,15 +1,17 @@
 /* Reset básico e fontes */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 body, html {
     margin: 0;
     padding: 0;
 }
+
 body {
     display: flex;
     justify-content: space-between;
-    width: 1440px;
-    height: 1024px;
-    background-color: #B2FDBA;
+    width: 100%; /* Alterado para largura total */
+    min-height: 100vh; /* Alterado para altura mínima de 100% da viewport */
+    background-color: #b2fdba;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -22,18 +24,18 @@ body {
     padding-right: 60px;
     padding-top: 26px; /* Aumenta o espaçamento superior */
     padding-bottom: 30px;
-    background-color: #FFFFFF; /* Cor de fundo do card */
-    border: 2px solid #01AB45; /* Borda verde do card */
+    background-color: #ffffff; /* Cor de fundo do card */
+    border: 2px solid #01ab45; /* Borda verde do card */
     border-radius: 16px; /* Bordas arredondadas */
     width: calc(70% - 260px - 60px); /* Largura ajustada */
-    height: 50%; /* Altura automática */
+    min-height: 50vh; /* Altura mínima de 50% da viewport */
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Mantém o botão na parte debaixo */
 }
 
 #main-content h1 {
-    color: #21272A; /* Cor verde para o título */
+    color: #21272a; /* Cor verde para o título */
     text-align: center; /* Alinha à esquerda */
 }
 
@@ -47,8 +49,8 @@ body {
 }
 
 #search-title {
-    color: #01AB45;
-    border-bottom: 2px solid #01AB45;
+    color: #01ab45;
+    border-bottom: 2px solid #01ab45;
     width: auto; /* Define a largura automática para o título */
     font-size: 16px;
     padding-top: 16px;
@@ -76,13 +78,19 @@ body {
     outline: none;
 }
 
+#main-content input[type="search"]:focus {
+    border-bottom: 2px solid #01ab45; /* Borda verde com 2px de espessura */
+    border-radius: 8px; /* Raio de borda de 8px */
+}
+
 #main-content table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
-#main-content th, #main-content td {
+#main-content th,
+#main-content td {
     text-align: left;
     padding: 10px;
     border-bottom: 1px solid #ccc;
@@ -153,20 +161,23 @@ body {
     font-weight: bold;
 }
 
-.modal-content input[type="text"],
-.modal-content input[type="checkbox"] {
+.modal-content select.select2-selection--multiple {
+    width: 100% !important; /* Largura total para o Select2 */
+}
+
+.modal-content input[type="text"] {
     padding: 8px;
     margin-top: 5px;
     width: 100%;
     box-sizing: border-box;
     background-color: #f2f4f8;
     border: none;
-    border-bottom: 1px solid #D0D5DD;
+    border-bottom: 1px solid #d0d5dd;
     outline: none;
 }
 
-.modal-content input:focus {
-    border-bottom: 1px solid #01ab45;
+.modal-content input[type="text"]:focus {
+    border-bottom: 1px solid #01ab45; /* Borda verde com 1px de espessura */
 }
 
 .modal-buttons {
@@ -200,4 +211,79 @@ body {
 
 .modal-buttons button:last-child:hover {
     background-color: #019639;
+}
+
+.select-container {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.select-container .select__control {
+    width: 100%;
+    min-height: 38px;
+    border: 2px solid #d0d5dd;
+    border-radius: 8px;
+    outline: none; /* Remove a borda de foco padrão */
+}
+
+.select-container .select__control--is-focused {
+    border-color: #01ab45; /* Cor da borda verde quando o select está em foco */
+    box-shadow: 0 0 0 2px rgba(1, 171, 69, 0.2); /* Sombra verde ao redor do select */
+}
+
+.select-container .select__multi-value {
+    background-color: #01ab45;
+    color: white;
+}
+
+.select-container .select__multi-value__remove {
+    color: white;
+    cursor: pointer;
+}
+
+.select-container .select__multi-value__remove:hover {
+    background-color: #017135;
+}
+
+/* Estilos para inputs e selects dentro do modal */
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content input[type="password"],
+.modal-content textarea,
+.modal-content .form-input {
+    height: 32px;
+    background-color: #f2f4f8;
+    border: 1px solid transparent;
+    border-bottom: 1px solid #c1c7cd;
+    font-size: 14px;
+    padding-left: 10px;
+    transition: border-color 0.3s ease;
+}
+
+.modal-content input[type="text"]:focus,
+.modal-content input[type="number"]:focus,
+.modal-content input[type="password"]:focus,
+.modal-content textarea:focus,
+.modal-content .form-input:focus {
+    border-color: #01ab45;
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none;
+}
+
+.modal-content select,
+.modal-content .form-select {
+    width: 100%;
+    min-height: 38px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.modal-content select:focus,
+.modal-content .form-select:focus {
+    border-color: #01ab45;
+    border-radius: 8px;
+    outline: none;
 }

@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Head from 'next/head';
 import { FaSearch } from 'react-icons/fa'; 
-import "/src/styles/perfis.css"; 
+import '/src/styles/perfis.css'; 
 import Footer from '/src/components/Footer'; 
 import Sidebar from '/src/components/Sidebar'; 
+import Select from 'react-select';
 
 export default function PerfisAdminPage() {
     const [perfis, setPerfis] = useState([]);
@@ -13,6 +14,7 @@ export default function PerfisAdminPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newPerfil, setNewPerfil] = useState({ nome_perfil: '', descricao: '', modulos: [] });
     const [modulos, setModulos] = useState([]);
+    const [selectedModulos, setSelectedModulos] = useState([]);
 
     useEffect(() => {
         // Chamada à API para buscar os perfis
@@ -44,34 +46,24 @@ export default function PerfisAdminPage() {
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
+
     const handleCreatePerfil = async () => {
         try {
             const response = await fetch('/api/perfis', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(newPerfil),
-            });
-    
-            if (!response.ok) {
-              throw new Error('Erro ao criar perfil');
-            }
-    
-            const data = await response.json();
-            const perfilCriado = data.data;
-    
-            // Associar os módulos selecionados ao perfil recém-criado
-            if (newPerfil.modulos && newPerfil.modulos.length > 0) {
-              await fetch(`/api/perfis/${perfilCriado.id}/modulos`, {
                 method: 'POST',
                 headers: {
-                  'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ modulos: newPerfil.modulos }),
-              });
+                body: JSON.stringify(newPerfil),
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao criar perfil');
             }
-    
+
+            const data = await response.json();
+            const perfilCriado = data.data;
+
             setPerfis([...perfis, perfilCriado]);
             setIsModalOpen(false); // Fecha o modal após criar o perfil
             setNewPerfil({ nome_perfil: '', descricao: '', modulos: [] }); // Limpa os campos do novo perfil
@@ -86,20 +78,22 @@ export default function PerfisAdminPage() {
         setNewPerfil({ ...newPerfil, [name]: value });
     };
 
-    const handleCheckboxChange = (e) => {
-        const { value, checked } = e.target;
-        if (checked) {
-            setNewPerfil((prevState) => ({ ...prevState, modulos: [...prevState.modulos, value] }));
-        } else {
-            setNewPerfil((prevState) => ({ ...prevState, modulos: prevState.modulos.filter(mod => mod !== value) }));
-        }
-    };
-
     const filteredPerfis = perfis.filter(perfil =>
         perfil &&
-        perfil.descricao && perfil.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        perfil.nome_perfil && perfil.nome_perfil.toLowerCase().includes(searchTerm.toLowerCase())
+        (perfil.descricao && perfil.descricao.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (perfil.nome_perfil && perfil.nome_perfil.toLowerCase().includes(searchTerm.toLowerCase()))
     );
+
+    const handleChangeSelect = (selectedOptions) => {
+        setSelectedModulos(selectedOptions);
+        setNewPerfil({ ...newPerfil, modulos: selectedOptions.map(option => option.value) });
+    };
+
+    const options = modulos.map(modulo => ({
+        value: modulo.id_modulo,
+        label: modulo.nome_modulo,
+    }));
+
     return (
         <>
             <Head>
@@ -170,16 +164,13 @@ export default function PerfisAdminPage() {
                             </label>
                             <label>
                                 Módulos:
-                                {modulos.map(modulo => (
-                                    <div key={modulo.id_modulo}>
-                                        <input 
-                                            type="checkbox" 
-                                            value={modulo.id_modulo} 
-                                            onChange={handleCheckboxChange} 
-                                        />
-                                        {modulo.nome_modulo}
-                                    </div>
-                                ))}
+                                <Select
+                                    value={selectedModulos}
+                                    onChange={handleChangeSelect}
+                                    options={options}
+                                    isMulti
+                                    placeholder="Selecione os módulos..."
+                                />
                             </label>
                             <div className="modal-buttons">
                                 <button type="button" className="cancel" onClick={() => setIsModalOpen(false)}>Cancelar</button>

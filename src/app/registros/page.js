@@ -61,22 +61,24 @@ export default function UserAdminPage() {
                         />
                     </div>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome de Usuário</th>
-                            <th>Matrícula</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredUsers.map((user) => (
-                            <tr key={user.id}>
-                                <td>{user.nome_usuario}</td>
-                                <td>{user.matricula}</td>
+                <div id="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome de Usuário</th>
+                                <th>Matrícula</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {filteredUsers.map((user) => (
+                                <tr key={user.id}>
+                                    <td>{user.nome_usuario}</td>
+                                    <td>{user.matricula}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 <button id="criar-usuario" onClick={handleCreateUser}>Criar Novo Usuário</button>
             </div>
             <Footer />

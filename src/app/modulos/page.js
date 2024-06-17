@@ -49,48 +49,47 @@ export default function ModulosAdminPage() {
 
     return (
         <>
-    <Head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-        <title>Administração de Módulos</title>
-    </Head>
-    <Sidebar />
-    <div id="main-content">
-        <h1>Módulos Existentes</h1>
-        <div id="search-wrapper">
-            <h2 id="search-title">Módulos</h2>
-            <div id="search-container">
-                <FaSearch id="search-icon" />
-                <input 
-                    type="search" 
-                    placeholder="Digite aqui..." 
-                    value={searchTerm}
-                    onChange={handleSearch}
-                />
+            <Head>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="initial-scale=1, width=device-width" />
+                <title>Administração de Módulos</title>
+            </Head>
+            <Sidebar />
+            <div id="main-content">
+                <h1>Módulos Existentes</h1>
+                <div id="search-wrapper">
+                    <h2 id="search-title">Módulos</h2>
+                    <div id="search-container">
+                        <FaSearch id="search-icon" />
+                        <input 
+                            type="search" 
+                            placeholder="Digite aqui..." 
+                            value={searchTerm}
+                            onChange={handleSearch}
+                        />
+                    </div>
+                </div>
+                <div id="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tag Abreviação</th>
+                                <th>Nome do Módulo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredModulos.map((modulo) => (
+                                <tr key={modulo.id_modulo}>
+                                    <td>{modulo.nome_modulo}</td>
+                                    <td>{modulo.descricao}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <button id="criar-modulo" onClick={handleCreateModulo}>Criar Novo Módulo</button>
             </div>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Tag Abreviação</th>
-                    <th>Nome do Módulo</th>
-                </tr>
-            </thead>
-            <tbody>
-                {filteredModulos.map((modulo) => (
-                    <tr key={modulo.id_modulo}>
-                        <td>{modulo.nome_modulo}</td>
-                        <td>{modulo.descricao}</td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-        <button id="criar-modulo" onClick={handleCreateModulo}>Criar Novo Módulo</button>
-    </div>
-    <Footer />
-</>
-
-
+            <Footer />
+        </>
     );
 }
-

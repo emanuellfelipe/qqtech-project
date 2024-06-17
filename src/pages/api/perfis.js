@@ -1,7 +1,6 @@
-// src/pages/api/perfis.js
-
 const Perfil = require('../../models/Perfil');
-const PerfilModulo = require('../../models/PerfilModulo'); // Importe o modelo de PerfilModulo
+const PerfilModulo = require('../../models/PerfilModulo');
+const Modulo = require('../../models/Modulo');
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -13,7 +12,7 @@ export default async function handler(req, res) {
 
       // Se houver módulos selecionados, associe-os ao perfil
       if (modulos && modulos.length > 0) {
-        await PerfilModulo.associateModules(perfil.id, modulos);
+        await PerfilModulo.associateModules(perfil.id_perfil, modulos);
       }
 
       // Responda com o perfil criado

@@ -1,6 +1,8 @@
 // models/PerfilModulo.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const Perfil = require('./Perfil');
+const Modulo = require('./Modulo');
 
 const PerfilModulo = sequelize.define('PerfilModulo', {
   id_perfil_modulo: {
@@ -12,7 +14,7 @@ const PerfilModulo = sequelize.define('PerfilModulo', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Perfil',
+      model: Perfil,
       key: 'id_perfil'
     }
   },
@@ -20,7 +22,7 @@ const PerfilModulo = sequelize.define('PerfilModulo', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Modulo',
+      model: Modulo,
       key: 'id_modulo'
     }
   }
@@ -29,7 +31,7 @@ const PerfilModulo = sequelize.define('PerfilModulo', {
   timestamps: false,
 });
 
-// Adicionando método estático para associar módulos a um perfil
+// Método estático para associar módulos a um perfil
 PerfilModulo.associateModules = async function(perfilId, moduloIds) {
   try {
     await Promise.all(moduloIds.map(async (moduloId) => {
