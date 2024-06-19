@@ -1,71 +1,37 @@
-// models/Associacoes.js
 const sequelize = require('../config/db');
 const Usuario = require('./Usuario');
 const Perfil = require('./Perfil');
 const Modulo = require('./Modulo');
-const { DataTypes } = require('sequelize');
+const Funcao = require('./Funcao');
+const Transacao = require('./Transacao');
+const PerfilUsuario = require('./PerfilUsuario');
+const PerfilModulo = require('./PerfilModulo');
+const ModuloFuncao = require('./ModuloFuncao');
+const ModuloTransacao = require('./ModuloTransacao');
 
-const PerfilUsuario = sequelize.define('PerfilUsuario', {
-  id_usuario: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    primaryKey: true,
-  },
-  id_perfil: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    primaryKey: true,
-  },
-}, {
-  tableName: 'perfil_usuario',
-  timestamps: false,
-});
+// Definindo os relacionamentos
+Usuario.belongsToMany(Perfil, { through: PerfilUsuario, foreignKey: 'id_usuario' });
+Perfil.belongsToMany(Usuario, { through: PerfilUsuario, foreignKey: 'id_perfil' });
 
-const PerfilModulo = sequelize.define('PerfilModulo', {
-  id_perfil: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    primaryKey: true,
-  },
-  id_modulo: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    primaryKey: true,
-  },
-}, {
-  tableName: 'perfil_modulo',
-  timestamps: false,
-});
+Perfil.belongsToMany(Modulo, { through: PerfilModulo, foreignKey: 'id_perfil' });
+Modulo.belongsToMany(Perfil, { through: PerfilModulo, foreignKey: 'id_modulo' });
 
-Usuario.belongsToMany(Perfil, {
-  through: PerfilUsuario,
-  foreignKey: 'id_usuario',
-  otherKey: 'id_perfil',
-});
+Modulo.belongsToMany(Funcao, { through: ModuloFuncao, foreignKey: 'id_modulo' });
+Funcao.belongsToMany(Modulo, { through: ModuloFuncao, foreignKey: 'id_funcao' });
 
-Perfil.belongsToMany(Usuario, {
-  through: PerfilUsuario,
-  foreignKey: 'id_perfil',
-  otherKey: 'id_usuario',
-});
+Modulo.belongsToMany(Transacao, { through: ModuloTransacao, foreignKey: 'id_modulo' });
+Transacao.belongsToMany(Modulo, { through: ModuloTransacao, foreignKey: 'id_transacao' });
 
-Perfil.belongsToMany(Modulo, {
-  through: PerfilModulo,
-  foreignKey: 'id_perfil',
-  otherKey: 'id_modulo',
-});
-
-Modulo.belongsToMany(Perfil, {
-  through: PerfilModulo,
-  foreignKey: 'id_modulo',
-  otherKey: 'id_perfil',
-});
-
+// Exportando os modelos e a instância do Sequelize
 module.exports = {
-  sequelize,
-  Usuario,
-  Perfil,
-  Modulo,
-  PerfilUsuario,
-  PerfilModulo,
+    sequelize,
+    Usuario,
+    Perfil,
+    Modulo,
+    Funcao,
+    Transacao,
+    PerfilUsuario,
+    PerfilModulo,
+    ModuloFuncao,
+    ModuloTransacao,
 };

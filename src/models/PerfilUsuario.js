@@ -4,7 +4,7 @@ const { DataTypes } = require('sequelize');
 const Usuario = require('./Usuario'); // Importe o modelo de Usuario aqui
 
 const PerfilUsuario = sequelize.define('PerfilUsuario', {
-    id: {
+    id_perfil_usuario: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true

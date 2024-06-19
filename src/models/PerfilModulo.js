@@ -15,6 +15,8 @@ const PerfilModulo = sequelize.define('PerfilModulo', {
     references: {
       model: Perfil,
       key: 'id_perfil',
+      onDelete: 'CASCADE', // Define ação de deleção em cascata
+      onUpdate: 'CASCADE' // Define ação de atualização em cascata, se necessário
     },
   },
   id_modulo: {
@@ -23,6 +25,8 @@ const PerfilModulo = sequelize.define('PerfilModulo', {
     references: {
       model: Modulo,
       key: 'id_modulo',
+      onDelete: 'CASCADE', // Define ação de deleção em cascata
+      onUpdate: 'CASCADE' // Define ação de atualização em cascata, se necessário
     },
   },
 }, {
@@ -30,21 +34,4 @@ const PerfilModulo = sequelize.define('PerfilModulo', {
   timestamps: false,
 });
 
-// Método estático para associar módulos a um perfil
-PerfilModulo.associateModules = async function(perfilId, moduloIds) {
-  try {
-    await Promise.all(moduloIds.map(async (moduloId) => {
-      await PerfilModulo.create({ id_perfil: perfilId, id_modulo: moduloId });
-    }));
-    console.log('Módulos associados com sucesso ao perfil:', perfilId);
-  } catch (error) {
-    console.error('Erro ao associar módulos ao perfil:', error);
-    throw error;
-  }
-};
-
 module.exports = PerfilModulo;
-
-// Definindo as associações entre os modelos
-Perfil.belongsToMany(Modulo, { through: PerfilModulo, foreignKey: 'id_perfil' });
-Modulo.belongsToMany(Perfil, { through: PerfilModulo, foreignKey: 'id_modulo' });

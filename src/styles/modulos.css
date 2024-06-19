@@ -33,6 +33,29 @@ body {
 #main-content h1 {
     color: #21272A;
     text-align: center;
+    font-size: 36px; /* Tamanho do título aumentado */
+    border: none;
+}
+
+.category-button {
+    background-color: transparent;
+    color: #01AB45;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 16px;
+    padding-bottom: 5px;
+    text-decoration: none; /* Remove sublinhado padrão dos links */
+}
+
+.category-button.selected {
+    border-bottom: 2px solid #01AB45;
+    color: #01AB45;
+}
+
+.category-button:hover {
+    color: #019639;
 }
 
 #search-wrapper {
@@ -97,7 +120,7 @@ body {
     font-size: 14px;
 }
 
-#criar-modulo {
+#criar-elemento {
     padding: 10px 20px;
     background-color: #01ab45;
     color: white;
@@ -109,9 +132,10 @@ body {
     margin-top: auto;
 }
 
-#criar-modulo:hover {
+#criar-elemento:hover {
     background-color: #019639;
 }
+
 .modal {
     display: flex;
     justify-content: center;
@@ -158,6 +182,7 @@ body {
 .modal-content select.select2-selection--multiple {
     width: 100% !important; /* Largura total para o Select2 */
 }
+
 .modal-content input[type="text"] {
     padding: 8px;
     margin-top: 5px;

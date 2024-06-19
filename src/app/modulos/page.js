@@ -1,21 +1,24 @@
+// Página ModulosAdminPage.js
+
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Image from 'next/image';
 import Head from 'next/head';
-import { FaSearch } from 'react-icons/fa'; 
-import "/src/styles/modulos.css"; 
-import Footer from '/src/components/Footer'; 
-import Sidebar from '/src/components/Sidebar'; 
+import { FaSearch } from 'react-icons/fa';
+import "/src/styles/modulos.css";
+import Footer from '/src/components/Footer';
+import Sidebar from '/src/components/Sidebar';
 
 export default function ModulosAdminPage() {
     const [modulos, setModulos] = useState([]);
+    const [transacoes, setTransacoes] = useState([]);
+    const [funcoes, setFuncoes] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newModulo, setNewModulo] = useState({ nome_modulo: '', descricao: '' });
+    const [newElemento, setNewElemento] = useState({ nome: '', descricao: '' });
+    const [currentCategory, setCurrentCategory] = useState('modulos');
 
     useEffect(() => {
-        // Chamada à API para buscar os módulos
         const fetchModulos = async () => {
             try {
                 const response = await axios.get('/api/modulos');
@@ -25,7 +28,27 @@ export default function ModulosAdminPage() {
             }
         };
 
+        const fetchTransacoes = async () => {
+            try {
+                const response = await axios.get('/api/transacoes');
+                setTransacoes(response.data);
+            } catch (error) {
+                console.error('Erro ao buscar transações:', error);
+            }
+        };
+
+        const fetchFuncoes = async () => {
+            try {
+                const response = await axios.get('/api/funcoes');
+                setFuncoes(response.data);
+            } catch (error) {
+                console.error('Erro ao buscar funções:', error);
+            }
+        };
+
         fetchModulos();
+        fetchTransacoes();
+        fetchFuncoes();
     }, []);
 
     const handleSearch = (event) => {
@@ -42,43 +65,131 @@ export default function ModulosAdminPage() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewModulo({ ...newModulo, [name]: value });
+        setNewElemento({ ...newElemento, [name]: value });
     };
 
-    const handleCreateModulo = async () => {
+    const handleCreateElemento = async () => {
         try {
-            const response = await axios.post('/api/modulos', newModulo);
-            setModulos([...modulos, response.data]);
-            setNewModulo({ nome_modulo: '', descricao: '' }); // Limpa os campos do novo módulo
-            closeModal(); // Fecha o modal após criar o módulo
-            alert('Módulo criado com sucesso!'); // Exibe mensagem de sucesso
+            let response;
+            switch (currentCategory) {
+                case 'modulos':
+                    response = await axios.post('/api/modulos', {
+                        nome_modulo: newElemento.nome,
+                        descricao: newElemento.descricao,
+                    });
+                    setModulos([...modulos, response.data]);
+                    break;
+                case 'transacoes':
+                    response = await axios.post('/api/transacoes', {
+                        nome_transacao: newElemento.nome,
+                        descricao: newElemento.descricao,
+                    });
+                    setTransacoes([...transacoes, response.data]);
+                    break;
+                case 'funcoes':
+                    response = await axios.post('/api/funcoes', newElemento);
+                    setFuncoes([...funcoes, response.data]);
+                    break;
+                default:
+                    break;
+            }
+            setNewElemento({ nome: '', descricao: '' });
+            closeModal();
+            alert('Elemento criado com sucesso!');
         } catch (error) {
-            console.error('Erro ao criar módulo:', error);
+            console.error('Erro ao criar elemento:', error);
         }
     };
 
-    const filteredModulos = modulos.filter(modulo =>
-        modulo.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        modulo.nome_modulo.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredItems = () => {
+        const lowerCaseSearchTerm = searchTerm.toLowerCase().trim();
+        switch (currentCategory) {
+            case 'modulos':
+                return modulos.filter(modulo =>
+                    modulo.nome_modulo.toLowerCase().includes(lowerCaseSearchTerm) ||
+                    modulo.descricao.toLowerCase().includes(lowerCaseSearchTerm)
+                );
+            case 'transacoes':
+                return transacoes.filter(transacao =>
+                    transacao.nome_transacao.toLowerCase().includes(lowerCaseSearchTerm) ||
+                    transacao.descricao.toLowerCase().includes(lowerCaseSearchTerm)
+                );
+            case 'funcoes':
+                return funcoes.filter(funcao =>
+                    funcao.nome_funcoes.toLowerCase().includes(lowerCaseSearchTerm) ||
+                    funcao.descricao.toLowerCase().includes(lowerCaseSearchTerm)
+                );
+            default:
+                return [];
+        }
+    };
+
+    const handleToggleCategory = (category) => {
+        setCurrentCategory(category);
+    };
+
+    const getTitleByCategory = () => {
+        switch (currentCategory) {
+            case 'modulos':
+                return 'Módulos';
+            case 'transacoes':
+                return 'Transações';
+            case 'funcoes':
+                return 'Funções';
+            default:
+                return 'Administração de Elementos';
+        }
+    };
+
+    const getNameFieldByCategory = (item) => {
+        switch (currentCategory) {
+            case 'modulos':
+                return item.nome_modulo;
+            case 'transacoes':
+                return item.nome_transacao;
+            case 'funcoes':
+                return item.nome_funcoes;
+            default:
+                return '';
+        }
+    };
 
     return (
         <>
             <Head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="initial-scale=1, width=device-width" />
-                <title>Administração de Módulos</title>
+                <title>{getTitleByCategory()}</title>
             </Head>
             <Sidebar />
             <div id="main-content">
-                <h1>Módulos Existentes</h1>
+                <h1 id="search-title">{getTitleByCategory()}</h1>
                 <div id="search-wrapper">
-                    <h2 id="search-title">Módulos</h2>
+                    <div>
+                        <button
+                            className={`category-button ${currentCategory === 'modulos' ? 'selected' : ''}`}
+                            onClick={() => handleToggleCategory('modulos')}
+                        >
+                            Módulos
+                        </button>
+                        <button
+                            className={`category-button ${currentCategory === 'transacoes' ? 'selected' : ''}`}
+                            onClick={() => handleToggleCategory('transacoes')}
+                        >
+                            Transações
+                        </button>
+                        <button
+                            className={`category-button ${currentCategory === 'funcoes' ? 'selected' : ''}`}
+                            onClick={() => handleToggleCategory('funcoes')}
+                        >
+                            Funções
+                        </button>
+                    </div>
                     <div id="search-container">
                         <FaSearch id="search-icon" />
-                        <input 
-                            type="search" 
-                            placeholder="Digite aqui..." 
+                        <input
+                            type="search"
+                            placeholder="Digite aqui..."
                             value={searchTerm}
                             onChange={handleSearch}
                         />
@@ -88,21 +199,21 @@ export default function ModulosAdminPage() {
                     <table>
                         <thead>
                             <tr>
-                                <th>Tag Abreviação</th>
-                                <th>Nome do Módulo</th>
+                                <th>TAG de Abreviação</th>
+                                <th>Descrição</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredModulos.map((modulo) => (
-                                <tr key={modulo.id_modulo}>
-                                    <td>{modulo.nome_modulo}</td>
-                                    <td>{modulo.descricao}</td>
+                            {filteredItems().map((item) => (
+                                <tr key={item.id}>
+                                    <td>{getNameFieldByCategory(item)}</td>
+                                    <td>{item.descricao}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-                <button id="criar-modulo" onClick={openModal}>Criar Novo Módulo</button>
+                <button id="criar-elemento" onClick={openModal}>Criar Novo Elemento</button>
             </div>
             <Footer />
 
@@ -110,14 +221,14 @@ export default function ModulosAdminPage() {
                 <div className="modal">
                     <div className="modal-content">
                         <span className="close" onClick={closeModal}>&times;</span>
-                        <h2>Criar Novo Módulo</h2>
+                        <h2>Criar Novo Elemento</h2>
                         <form>
                             <label>
-                                Nome do Módulo:
+                                Nome do Elemento:
                                 <input
                                     type="text"
-                                    name="nome_modulo"
-                                    value={newModulo.nome_modulo}
+                                    name="nome"
+                                    value={newElemento.nome}
                                     onChange={handleInputChange}
                                 />
                             </label>
@@ -126,13 +237,13 @@ export default function ModulosAdminPage() {
                                 <input
                                     type="text"
                                     name="descricao"
-                                    value={newModulo.descricao}
+                                    value={newElemento.descricao}
                                     onChange={handleInputChange}
                                 />
                             </label>
                             <div className="modal-buttons">
                                 <button type="button" className="cancel" onClick={closeModal}>Cancelar</button>
-                                <button type="button" onClick={handleCreateModulo}>Salvar</button>
+                                <button type="button" onClick={handleCreateElemento}>Salvar</button>
                             </div>
                         </form>
                     </div>
