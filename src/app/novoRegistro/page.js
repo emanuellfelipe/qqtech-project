@@ -1,9 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
+// src/pages/cadastro.js
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import Sidebar from '/src/components/Sidebar';
 import Footer from '/src/components/Footer';
+import Notification from '/src/components/Notification';
 import "/src/styles/cadastro.css";
 
 export default function CadastroPage() {
@@ -15,6 +18,8 @@ export default function CadastroPage() {
     const [senha, setSenha] = useState('');
     const [perfis, setPerfis] = useState([]);
     const [perfil, setSelectedPerfil] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         async function fetchPerfis() {
@@ -34,9 +39,20 @@ export default function CadastroPage() {
         setPasswordVisible((prevState) => !prevState);
     };
 
+    const clearForm = () => {
+        setMatricula('');
+        setNomeCompleto('');
+        setNomeUsuario('');
+        setEmail('');
+        setSenha('');
+        setSelectedPerfil('');
+    };
+
     const handleFormSubmit = async (event) => {
         event.preventDefault();
         console.log('Formulário enviado', { matricula, nome_completo, nome_usuario, email, senha, perfil });
+        setSuccessMessage('');
+        setErrorMessage('');
         try {
             await axios.post('/api/register', {
                 matricula,
@@ -46,11 +62,16 @@ export default function CadastroPage() {
                 senha,
                 perfil: [perfil]
             });
-            // Redirecionar para a página de sucesso ou fazer outra ação necessária
+            setSuccessMessage('Usuário cadastrado com sucesso!');
+            clearForm(); // Limpa os campos do formulário após o cadastro
         } catch (error) {
             console.error('Erro ao cadastrar usuário:', error);
-            
+            setErrorMessage('Erro ao cadastrar usuário. Por favor, tente novamente.');
         }
+    };
+
+    const handleCancel = () => {
+        window.location.href = '/registros';
     };
 
     return (
@@ -130,10 +151,12 @@ export default function CadastroPage() {
                             ))}
                         </select>
                         <div id="botoes">
-                            <button type="reset" id="botao-cancelar">Cancelar</button>
+                            <button type="button" id="botao-cancelar" onClick={handleCancel}>Cancelar</button>
                             <button type="submit" id="botao-cadastrar">Cadastrar</button>
                         </div>
                     </form>
+                    {successMessage && <Notification message={successMessage} type="success" />}
+                    {errorMessage && <Notification message={errorMessage} type="error" />}
                 </div>
             </div>
             <Footer />

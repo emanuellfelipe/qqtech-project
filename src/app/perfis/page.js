@@ -150,6 +150,15 @@ export default function PerfisAdminPage() {
         return <div>Erro ao carregar dados: {error.message}</div>;
     }
 
+    // Abrir o modal para criar um novo perfil
+    const handleOpenNewPerfilModal = () => {
+        // Resetar o estado para criar um novo perfil
+        setNewPerfil({ nome_perfil: '', descricao: '', modulos: [] });
+        setSelectedModulos([]); // Limpar os módulos selecionados
+        setIsEditing(false);
+        setIsModalOpen(true);
+    };
+
     return (
         <>
             <Head>
@@ -197,7 +206,7 @@ export default function PerfisAdminPage() {
                         ))}
                     </tbody>
                 </table>
-                <button id="criar-perfil" onClick={() => setIsModalOpen(true)}>Criar Novo Perfil</button>
+                <button id="criar-perfil" onClick={handleOpenNewPerfilModal}>Criar Novo Perfil</button>
             </div>
             <Footer />
 

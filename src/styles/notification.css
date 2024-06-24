@@ -1,0 +1,20 @@
+/* src/styles/notification.css */
+.notification {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.success-message {
+    color: green;
+    background-color: #e6ffe6;
+    border: 1px solid green;
+}
+
+.error-message {
+    color: red;
+    background-color: #ffe6e6;
+    border: 1px solid red;
+}

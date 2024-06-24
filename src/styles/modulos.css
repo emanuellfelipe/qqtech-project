@@ -39,7 +39,7 @@ body {
 
 .category-button {
     background-color: transparent;
-    color: #01AB45;
+    color: #000000; /* Cor padrão para botões não selecionados */
     border: none;
     border-bottom: 2px solid transparent;
     cursor: pointer;
@@ -51,7 +51,7 @@ body {
 
 .category-button.selected {
     border-bottom: 2px solid #01AB45;
-    color: #01AB45;
+    color: #01AB45; /* Cor verde para o botão selecionado */
 }
 
 .category-button:hover {
@@ -134,6 +134,19 @@ body {
 
 #criar-elemento:hover {
     background-color: #019639;
+}
+
+.action-button {
+    background: none;
+    border: none;
+    color: #01AB45;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.action-button:hover {
+    color: #960101;
 }
 
 .modal {
