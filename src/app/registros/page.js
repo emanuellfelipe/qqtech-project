@@ -1,8 +1,8 @@
-// app/registros/page.js
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import Select from 'react-select';
 import Sidebar from '/src/components/Sidebar';
 import Footer from '/src/components/Footer';
 import "/src/styles/usuarios.css";
@@ -15,47 +15,93 @@ export default function UserAdminPage() {
     const [editedNomeUsuario, setEditedNomeUsuario] = useState('');
     const [editedEmail, setEditedEmail] = useState('');
     const [editedNomeCompleto, setEditedNomeCompleto] = useState('');
-    const [editedMatricula, setEditedMatricula] = useState(''); // Novo estado para matrícula
-    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [editedMatricula, setEditedMatricula] = useState('');
+    const [selectedPerfil, setSelectedPerfil] = useState(null);
+    const [perfisDisponiveis, setPerfisDisponiveis] = useState([]);
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get('/api/users');
-                setUsers(response.data);
-            } catch (error) {
-                console.error('Erro ao buscar usuários:', error);
-            }
-        };
-
         fetchUsers();
+        fetchPerfisDisponiveis();
     }, []);
+
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get('/api/users');
+            setUsers(response.data);
+        } catch (error) {
+            console.error('Erro ao buscar usuários:', error);
+            alert('Erro ao buscar usuários. Tente novamente.');
+        }
+    };
+
+    const fetchPerfisDisponiveis = async () => {
+        try {
+            const response = await axios.get('/api/perfis');
+    
+            if (response.data.success && Array.isArray(response.data.data)) {
+                const perfis = response.data.data.map(perfil => ({
+                    value: perfil.id_perfil,
+                    label: perfil.nome_perfil,
+                }));
+                setPerfisDisponiveis(perfis);
+            } else {
+                throw new Error("Formato de dados inesperado");
+            }
+        } catch (error) {
+            console.error('Erro ao buscar perfis disponíveis:', error);
+            alert('Erro ao buscar perfis disponíveis. Tente novamente.');
+        }
+    };
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
 
-    const handleEditUser = (id_usuario) => {
-        const userToEdit = users.find(user => user.id_usuario === id_usuario);
-        setEditingUser(userToEdit);
-        setEditedNomeUsuario(userToEdit.nome_usuario);
-        setEditedEmail(userToEdit.email);
-        setEditedNomeCompleto(userToEdit.nome_completo);
-        setEditedMatricula(userToEdit.matricula); // Carregar matrícula para o estado
-        setIsModalOpen(true);
+    const handleEditUser = async (id_usuario) => {
+        try {
+            const response = await axios.get(`/api/users?id_usuario=${id_usuario}`);
+            const userToEdit = response.data;
+    
+            if (!userToEdit) {
+                console.error(`Usuário com id ${id_usuario} não encontrado.`);
+                return;
+            }
+    
+            setEditingUser(userToEdit);
+            setEditedNomeUsuario(userToEdit.nome_usuario);
+            setEditedEmail(userToEdit.email);
+            setEditedNomeCompleto(userToEdit.nome_completo);
+            setEditedMatricula(userToEdit.matricula);
+    
+            // Verifique se o usuário tem perfis associados e configure o estado do perfil selecionado
+            if (userToEdit.Perfis && userToEdit.Perfis.length > 0) {
+                const perfilAssociado = userToEdit.Perfis[0];
+                setSelectedPerfil({ value: perfilAssociado.id_perfil, label: perfilAssociado.nome_perfil });
+            } else {
+                setSelectedPerfil(null); // Caso não haja perfil associado, limpe a seleção
+            }
+    
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Erro ao buscar dados para edição:', error);
+            alert('Erro ao buscar dados para edição. Tente novamente.');
+        }
     };
+    
+    
 
     const handleSaveChanges = async () => {
         try {
             const updatedUser = {
-                ...editingUser,
+                id_usuario: editingUser.id_usuario,
                 nome_usuario: editedNomeUsuario,
                 email: editedEmail,
                 nome_completo: editedNomeCompleto,
-                matricula: editedMatricula // Incluir matrícula nas alterações
+                matricula: editedMatricula,
+                perfil: selectedPerfil ? selectedPerfil.value : null
             };
 
-            const response = await axios.put(`/api/users/${updatedUser.id_usuario}`, updatedUser);
+            const response = await axios.put(`/api/users?id_usuario=${updatedUser.id_usuario}`, updatedUser);
 
             if (response.status === 200) {
                 setUsers(users.map(user => (user.id_usuario === updatedUser.id_usuario ? updatedUser : user)));
@@ -81,7 +127,7 @@ export default function UserAdminPage() {
 
         const id_usuario = userToDelete.id_usuario;
 
-        if (confirm('Tem certeza de que deseja excluir este usuário?')) {
+        if (window.confirm('Tem certeza de que deseja excluir este usuário?')) {
             try {
                 await axios.delete(`/api/users?id_usuario=${id_usuario}`);
                 setUsers(users.filter(user => user.id_usuario !== id_usuario));
@@ -141,7 +187,7 @@ export default function UserAdminPage() {
                         </tbody>
                     </table>
                 </div>
-                <button id="criar-usuario" onClick={() => setIsModalOpen(true)}>Criar Novo Usuário</button>
+                <button id="criar-usuario" onClick={() => window.location.href = '/novoRegistro'}>Criar Novo Usuário</button>
             </div>
             <Footer />
 
@@ -186,12 +232,25 @@ export default function UserAdminPage() {
                                 onChange={(e) => setEditedEmail(e.target.value)}
                             />
                         </div>
+                        <div className="input-container">
+                            <label htmlFor="editedPerfil">Perfil:</label>
+                            <Select
+    id="editedPerfil"
+    value={selectedPerfil} // Aqui é onde o perfil selecionado será exibido
+    onChange={(selectedOption) => setSelectedPerfil(selectedOption)}
+    options={perfisDisponiveis}
+    isMulti={false}
+    isClearable
+/>
+                        </div>
                         <div className="modal-footer">
                             <button onClick={handleSaveChanges}>Salvar Alterações</button>
                         </div>
                     </div>
                 </div>
             )}
+
+            <Footer />
         </>
     );
 }

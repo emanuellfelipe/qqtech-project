@@ -1,3 +1,5 @@
+// src/models/associations.js
+
 const sequelize = require('../config/db');
 const Usuario = require('./Usuario');
 const Perfil = require('./Perfil');

@@ -8,6 +8,7 @@ import Footer from '/src/components/Footer';
 import Sidebar from '/src/components/Sidebar'; 
 import Select from 'react-select';
 
+
 export default function PerfisAdminPage() {
     const [perfis, setPerfis] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -59,7 +60,7 @@ export default function PerfisAdminPage() {
     };
 
     const handleCreateOrEditPerfil = async () => {
-        const url = isEditing ? `/api/perfis/${editingPerfilId}` : '/api/perfis';
+        const url = isEditing ? `/api/perfis?id_perfil=${editingPerfilId}` : '/api/perfis';
         const method = isEditing ? 'PUT' : 'POST';
 
         try {
@@ -68,7 +69,7 @@ export default function PerfisAdminPage() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newPerfil),
+                body: JSON.stringify({ ...newPerfil, modulos: selectedModulos.map(modulo => modulo.value) }),
             });
 
             if (!response.ok) {
@@ -104,9 +105,9 @@ export default function PerfisAdminPage() {
         setNewPerfil({ 
             nome_perfil: perfil.nome_perfil, 
             descricao: perfil.descricao, 
-            modulos: perfil.modulos ? perfil.modulos.map(modulo => modulo.id_modulo) : [] 
+            modulos: perfil.Modulos ? perfil.Modulos.map(modulo => modulo.id_modulo) : [] 
         });
-        setSelectedModulos(perfil.modulos ? perfil.modulos.map(modulo => ({ value: modulo.id_modulo, label: modulo.nome_modulo })) : []);
+        setSelectedModulos(perfil.Modulos ? perfil.Modulos.map(modulo => ({ value: modulo.id_modulo, label: modulo.nome_modulo })) : []);
         setIsEditing(true);
         setEditingPerfilId(perfil.id_perfil);
         setIsModalOpen(true);
@@ -150,11 +151,9 @@ export default function PerfisAdminPage() {
         return <div>Erro ao carregar dados: {error.message}</div>;
     }
 
-    // Abrir o modal para criar um novo perfil
     const handleOpenNewPerfilModal = () => {
-        // Resetar o estado para criar um novo perfil
         setNewPerfil({ nome_perfil: '', descricao: '', modulos: [] });
-        setSelectedModulos([]); // Limpar os módulos selecionados
+        setSelectedModulos([]);
         setIsEditing(false);
         setIsModalOpen(true);
     };

@@ -1,3 +1,5 @@
+// src/models/PerfilModulo.js
+
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const Perfil = require('./Perfil');
@@ -33,5 +35,20 @@ const PerfilModulo = sequelize.define('PerfilModulo', {
   tableName: 'perfil_modulo',
   timestamps: false,
 });
+
+// Função para associar módulos a um perfil
+PerfilModulo.associateModules = async function (id_perfil, modulos) {
+  try {
+    // Remover todos os módulos associados ao perfil
+    await PerfilModulo.destroy({ where: { id_perfil } });
+
+    // Associar os novos módulos ao perfil
+    const perfilModulos = modulos.map(id_modulo => ({ id_perfil, id_modulo }));
+    await PerfilModulo.bulkCreate(perfilModulos);
+  } catch (error) {
+    console.error('Erro ao associar módulos ao perfil:', error);
+    throw error;
+  }
+};
 
 module.exports = PerfilModulo;

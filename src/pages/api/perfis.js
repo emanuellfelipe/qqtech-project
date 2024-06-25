@@ -1,8 +1,6 @@
 // src/pages/api/perfis.js
 
-const Perfil = require('../../models/Perfil');
-const PerfilModulo = require('../../models/PerfilModulo');
-const PerfilUsuario = require('../../models/PerfilUsuario'); // Importe o modelo de PerfilUsuario
+const { Perfil, PerfilModulo, PerfilUsuario, Modulo } = require('../../models/associations');
 
 export default async function handler(req, res) {
   switch (req.method) {
@@ -12,18 +10,26 @@ export default async function handler(req, res) {
     case 'POST':
       await createPerfil(req, res);
       break;
+    case 'PUT':
+      await updatePerfil(req, res);
+      break;
     case 'DELETE':
       await deletePerfil(req, res);
       break;
     default:
-      res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
+      res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
       res.status(405).end(`Método ${req.method} não permitido`);
   }
 }
 
 async function getPerfis(req, res) {
   try {
-    const perfis = await Perfil.findAll();
+    const perfis = await Perfil.findAll({
+      include: {
+        model: Modulo,
+        through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
+      }
+    });
     res.status(200).json({ success: true, data: perfis });
   } catch (error) {
     console.error('Erro ao buscar perfis:', error);
@@ -31,13 +37,14 @@ async function getPerfis(req, res) {
   }
 }
 
+
 async function createPerfil(req, res) {
   try {
     const { nome_perfil, descricao, modulos } = req.body;
     const perfil = await Perfil.create({ nome_perfil, descricao });
 
     if (modulos && modulos.length > 0) {
-      await PerfilModulo.associateModules(perfil.id, modulos);
+      await PerfilModulo.associateModules(perfil.id_perfil, modulos);
     }
 
     res.status(201).json({ success: true, data: perfil, message: 'Perfil criado com sucesso' });
@@ -46,6 +53,29 @@ async function createPerfil(req, res) {
     res.status(500).json({ success: false, message: 'Erro ao criar perfil' });
   }
 }
+
+async function updatePerfil(req, res) {
+  try {
+    const { id_perfil } = req.query;
+    const { nome_perfil, descricao, modulos } = req.body;
+
+    const perfil = await Perfil.findByPk(id_perfil);
+    if (!perfil) {
+      return res.status(404).json({ success: false, message: 'Perfil não encontrado' });
+    }
+
+    await perfil.update({ nome_perfil, descricao });
+
+    // Atualizar módulos associados ao perfil
+    await PerfilModulo.associateModules(perfil.id_perfil, modulos);
+
+    res.status(200).json({ success: true, data: perfil, message: 'Perfil atualizado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao atualizar perfil:', error);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar perfil' });
+  }
+}
+
 async function deletePerfil(req, res) {
   try {
     const { id_perfil } = req.query;

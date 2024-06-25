@@ -1,7 +1,5 @@
-// pages/api/users.js
-const Usuario = require('../../models/Usuario');
-const PerfilUsuario = require('../../models/PerfilUsuario');
-const Perfil = require('../../models/Perfil'); // Importe o modelo de Perfil
+const { sequelize, Usuario, PerfilUsuario, Perfil } = require('../../models/associations');
+
 
 export default async function handler(req, res) {
   switch (req.method) {
@@ -43,12 +41,12 @@ async function getUser(req, res) {
   try {
     const { id_usuario } = req.query;
     const usuario = await Usuario.findByPk(id_usuario, {
-      include: {
+      include: [{
         model: Perfil,
         through: {
           attributes: [] // Evita trazer colunas extras da tabela de associação
         }
-      }
+      }]
     });
     if (!usuario) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
@@ -62,11 +60,31 @@ async function getUser(req, res) {
 
 async function createUser(req, res) {
   try {
-    const newUser = await Usuario.create(req.body);
+    const { matricula, nome_completo, nome_usuario, email, senha, perfil } = req.body;
+    const newUser = await Usuario.create({ matricula, nome_completo, nome_usuario, email, senha });
+
+    if (perfil && perfil.length > 0) {
+      await PerfilUsuario.associateUsers(newUser.id_usuario, perfil);
+    }
+
     res.status(201).json(newUser);
   } catch (error) {
     console.error('Erro ao criar usuário:', error);
     res.status(500).json({ error: 'Erro ao criar usuário' });
+  }
+}
+async function getPerfis(req, res) {
+  try {
+    const perfis = await Perfil.findAll({
+      include: {
+        model: Modulo,
+        through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
+      }
+    });
+    res.status(200).json({ success: true, data: perfis });
+  } catch (error) {
+    console.error('Erro ao buscar perfis:', error);
+    res.status(500).json({ success: false, message: 'Erro ao buscar perfis' });
   }
 }
 
@@ -80,30 +98,40 @@ async function updateUser(req, res) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    // Atualiza os dados do usuário
-    usuario.matricula = matricula;
-    usuario.nome_completo = nome_completo;
-    usuario.nome_usuario = nome_usuario;
-    usuario.email = email;
+    const transaction = await sequelize.transaction();
 
-    // Atualiza a senha apenas se fornecida
-    if (senha) {
-      usuario.senha = senha;
+    try {
+      // Atualiza os dados do usuário
+      usuario.matricula = matricula;
+      usuario.nome_completo = nome_completo;
+      usuario.nome_usuario = nome_usuario;
+      usuario.email = email;
+
+      // Atualiza a senha apenas se fornecida
+      if (senha) {
+        usuario.senha = senha;
+      }
+
+      await usuario.save({ transaction });
+
+      // Atualiza o perfil do usuário na tabela de associação
+      if (perfil && perfil.length > 0) {
+        await PerfilUsuario.associateUsers(id_usuario, perfil);
+      }
+
+      await transaction.commit();
+      res.status(200).json(usuario);
+    } catch (error) {
+      await transaction.rollback();
+      console.error('Erro ao atualizar usuário:', error);
+      res.status(500).json({ error: 'Erro ao atualizar usuário' });
     }
-
-    await usuario.save();
-
-    // Atualiza o perfil do usuário na tabela de associação
-    await PerfilUsuario.update({ id_perfil: perfil }, {
-      where: { id_usuario }
-    });
-
-    res.status(200).json(usuario);
   } catch (error) {
-    console.error('Erro ao atualizar usuário:', error);
+    console.error('Erro ao iniciar transação:', error);
     res.status(500).json({ error: 'Erro ao atualizar usuário' });
   }
 }
+
 
 async function deleteUser(req, res) {
   try {

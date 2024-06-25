@@ -247,6 +247,22 @@ body {
 .select-container .select__multi-value__remove:hover {
     background-color: #017135;
 }
+.modal-content input[type="email"] {
+    height: 32px;
+    background-color: #f2f4f8;
+    border: 1px solid transparent;
+    border-bottom: 1px solid #c1c7cd;
+    font-size: 14px;
+    padding-left: 10px;
+    transition: border-color 0.3s ease;
+}
+
+.modal-content input[type="email"]:focus {
+    border-color: #01ab45;
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none;
+}
 
 /* Estilos para inputs e selects dentro do modal */
 .modal-content input[type="text"],
