@@ -6,6 +6,7 @@ import '/src/styles/forgotPassword.css';
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const [resetCode, setResetCode] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,10 +18,14 @@ export default function ForgotPasswordPage() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ email }),
-            });;
+            });
     
             if (response.ok) {
+                const data = await response.json();
+                setResetCode(data.reset_code); // Armazena temporariamente o código retornado
                 setMessage('Email enviado com sucesso!');
+                // Redireciona para a página de confirmação com o código armazenado
+                window.location.href = `/forgotConfirm?email=${email}`;
             } else {
                 const errorData = await response.json();
                 setMessage(errorData.detail || 'Erro ao enviar email.');
@@ -76,4 +81,3 @@ export default function ForgotPasswordPage() {
         </>
     );
 }
-

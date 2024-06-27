@@ -59,10 +59,62 @@ body, html {
     transition: background-color 0.3s ease;
     width: 400px;
     font-weight: 550;
+    margin-top: 24px; /* Aumenta o espaçamento entre o botão e o último field */
 }
 
 .button:hover {
     background-color: #019639;
 }
 
+.label {
+    font-weight: bold; /* Coloca os labels em negrito */
+    
+}
 
+.label-and-field {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 12px; /* Aumenta o espaçamento entre os campos */
+    width: 100%;
+}
+
+.field {
+    background-color: #f2f4f8;
+    border: 1px solid transparent; /* Remove a borda preta nos inputs */
+    border-bottom: 1px solid #c1c7cd;
+    box-sizing: border-box;
+    height: 40px; /* Diminui a altura dos inputs */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 16px;
+    font-size: 16px;
+    color: #697077;
+    width: 100%;
+}
+
+.field:focus-within {
+    border: 2px solid #01AB45;
+    border-radius: 4px;
+    outline: none;
+}
+
+input[type="email"] {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    color: #000000;
+}
+
+input[type="email"]:focus {
+    border-color: #01AB45;
+    border-radius: 4px;
+    border-width: 2px;
+    outline: none;
+}

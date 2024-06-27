@@ -1,15 +1,12 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 import string
 import secrets
 from fastapi.middleware.cors import CORSMiddleware
-import requests
-from google.oauth2 import service_account
-import json
 
 # Configuração do banco de dados
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -40,57 +37,28 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-# Carregar informações da conta de serviço do arquivo JSON
-with open("C:/Users/980235/qqtech-project/public/seraphic-scarab-427700-h7-3e374fbcc6d3.json") as f:
-    service_account_info = json.load(f)
+# Configuração do envio de email com credenciais
+conf = ConnectionConfig(
+    MAIL_USERNAME="qqtechrecovery@gmail.com",
+    MAIL_PASSWORD="k w s e z c i n f t p r g j f b",
+    MAIL_FROM="qqtechrecovery@gmail.com",
+    MAIL_PORT=587,
+    MAIL_SERVER="smtp.gmail.com",
+    MAIL_STARTTLS=True,
+    MAIL_SSL_TLS=False,
+    USE_CREDENTIALS=True,
+    VALIDATE_CERTS=True
+)
 
-# Configuração do envio de email com OAuth2
-class GmailOAuth2:
-    OAUTH2_CLIENT_ID = "249926372512-g30bnrg2d257ba8glp419horjul6iba6.apps.googleusercontent.com"
-    OAUTH2_CLIENT_SECRET = "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"
-    OAUTH2_REFRESH_TOKEN = "1//0hNwfEmkDlO9oCgYIARAAGBESNwF-L9Iru0MZVnGKITKmULy3TuDcxjH7L2wQeb3WQudJrlHcwHPDhw15-oE56kPvnOgBbjc4wMQ"
-
-oauth2_config = GmailOAuth2()
-
-# Função para obter o token OAuth2
-def get_oauth2_token():
-    try:
-        credentials = service_account.Credentials.from_service_account_info(
-            service_account_info,
-            scopes=["https://www.googleapis.com/auth/gmail.send"]
-        )
-        access_token = credentials.refresh(requests.Request()).token
-        return access_token
-    except Exception as e:
-        print(f"Erro ao obter token OAuth2: {e}")
-        return None
-
-# Função para enviar e-mail usando OAuth2
-async def send_email_oauth2(message: MessageSchema):
-    access_token = get_oauth2_token()
-
-    if not access_token:
-        raise HTTPException(status_code=500, detail="Erro ao obter token OAuth2")
-
-    connection_config = ConnectionConfig(
-        MAIL_USERNAME=oauth2_config.OAUTH2_CLIENT_ID,
-        MAIL_PASSWORD=access_token,
-        MAIL_PORT=587,
-        MAIL_SERVER="smtp.gmail.com",
-        MAIL_STARTTLS=True,
-        MAIL_SSL_TLS=False,
-        MAIL_FROM=oauth2_config.OAUTH2_CLIENT_ID,
-    )
-
-    fm = FastMail(connection_config)
-
+# Função para enviar e-mail
+async def send_email(message: MessageSchema):
+    fm = FastMail(conf)
     try:
         await fm.send_message(message)
+        return {"message": "Email enviado com sucesso"}
     except Exception as e:
         print(f"Erro ao enviar e-mail: {e}")
         raise HTTPException(status_code=500, detail="Erro ao enviar e-mail")
-
-    return {"message": "Email enviado com sucesso"}
 
 # Função para obter uma sessão de banco de dados
 def get_db():
@@ -102,7 +70,12 @@ def get_db():
 
 # Modelos Pydantic
 class EmailSchema(BaseModel):
-    email: str
+    email: EmailStr
+
+class ResetPasswordSchema(BaseModel):
+    email: EmailStr
+    code: str
+    newPassword: str
 
 class Login(BaseModel):
     username: str
@@ -122,8 +95,12 @@ async def forgot_password(payload: EmailSchema, db: Session = Depends(get_db)):
         if not email:
             raise HTTPException(status_code=400, detail="Email não fornecido")
 
-        reset_code = generate_reset_code()
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
+        reset_code = generate_reset_code()
+        
         message = MessageSchema(
             subject="Redefinição de senha",
             recipients=[email],
@@ -131,15 +108,41 @@ async def forgot_password(payload: EmailSchema, db: Session = Depends(get_db)):
             subtype="plain"
         )
 
-        await send_email_oauth2(message)
+        await send_email(message)
 
-        return {"message": "Email enviado com sucesso"}
+        return {"message": "Email enviado com sucesso", "reset_code": reset_code}
+    except Exception as e:
+        print(f"Erro interno do servidor: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.post("/api/reset-password")
+async def reset_password(payload: ResetPasswordSchema, db: Session = Depends(get_db)):
+    try:
+        email = payload.email
+        code = payload.code
+        new_password = payload.newPassword
+
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+        # Aqui você pode adicionar a lógica para verificar se o código de reset é válido
+
+        # Atualizar a senha do usuário
+        user.senha = new_password
+        db.commit()
+
+        return {"message": "Senha redefinida com sucesso"}
     except Exception as e:
         print(f"Erro interno do servidor: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 @app.options("/api/forgot-password")  # Manipulador OPTIONS para lidar com pré-verificação CORS
 async def options_forgot_password():
+    return {"Allow": "POST"}
+
+@app.options("/api/reset-password")  # Manipulador OPTIONS para lidar com pré-verificação CORS
+async def options_reset_password():
     return {"Allow": "POST"}
 
 @app.post('/api/login')
