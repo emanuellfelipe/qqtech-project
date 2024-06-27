@@ -1,27 +1,104 @@
-// src/pages/api/transacoes.js
-import Transacao from '../../models/Transacao';
+const { Transacao, ModuloTransacao, Modulo } = require('../../models/associations');
 
 export default async function handler(req, res) {
-  if (req.method === 'GET') {
-    try {
-      const transacoes = await Transacao.findAll({
-        attributes: ['id_transacao', 'nome_transacao', 'descricao']
-      });
-      res.status(200).json(transacoes);
-    } catch (error) {
-      console.error('Erro ao buscar transações:', error);
-      res.status(500).json({ error: 'Erro ao buscar transações' });
+  switch (req.method) {
+    case 'GET':
+      await getTransacoes(req, res);
+      break;
+    case 'POST':
+      await createTransacao(req, res);
+      break;
+    case 'PUT':
+      await updateTransacao(req, res);
+      break;
+    case 'DELETE':
+      await deleteTransacao(req, res);
+      break;
+    default:
+      res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
+      res.status(405).end(`Método ${req.method} não permitido`);
+  }
+}
+
+async function getTransacoes(req, res) {
+  try {
+    const transacoes = await Transacao.findAll({
+      include: {
+        model: Modulo,
+        through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
+      }
+    });
+    res.status(200).json({ success: true, data: transacoes });
+  } catch (error) {
+    console.error('Erro ao buscar transações:', error);
+    res.status(500).json({ success: false, message: 'Erro ao buscar transações' });
+  }
+}
+
+async function createTransacao(req, res) {
+  try {
+    const { nome_transacao, descricao, modulos } = req.body;
+    const transacao = await Transacao.create({ nome_transacao, descricao });
+
+    if (modulos && modulos.length > 0) {
+      await ModuloTransacao.bulkCreate(modulos.map(moduloId => ({
+        id_transacao: transacao.id_transacao,
+        id_modulo: moduloId
+      })));
     }
-  } else if (req.method === 'POST') {
-    const { nome_transacao, descricao } = req.body;
-    try {
-      const novaTransacao = await Transacao.create({ nome_transacao, descricao });
-      res.status(201).json(novaTransacao);
-    } catch (error) {
-      console.error('Erro ao criar transação:', error);
-      res.status(500).json({ error: 'Erro ao criar transação' });
+
+    res.status(201).json({ success: true, data: transacao, message: 'Transação criada com sucesso' });
+  } catch (error) {
+    console.error('Erro ao criar transação:', error);
+    res.status(500).json({ success: false, message: 'Erro ao criar transação' });
+  }
+}
+
+async function updateTransacao(req, res) {
+  try {
+    const { id_transacao } = req.query;
+    const { nome_transacao, descricao, modulos } = req.body;
+
+    const transacao = await Transacao.findByPk(id_transacao);
+    if (!transacao) {
+      return res.status(404).json({ success: false, message: 'Transação não encontrada' });
     }
-  } else {
-    res.status(405).json({ message: 'Método não permitido' });
+
+    await transacao.update({ nome_transacao, descricao });
+
+    // Atualizar módulos associados à transação
+    await ModuloTransacao.destroy({ where: { id_transacao } });
+    if (modulos && modulos.length > 0) {
+      await ModuloTransacao.bulkCreate(modulos.map(moduloId => ({
+        id_transacao: id_transacao,
+        id_modulo: moduloId
+      })));
+    }
+
+    res.status(200).json({ success: true, data: transacao, message: 'Transação atualizada com sucesso' });
+  } catch (error) {
+    console.error('Erro ao atualizar transação:', error);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar transação' });
+  }
+}
+
+async function deleteTransacao(req, res) {
+  try {
+    const { id_transacao } = req.query;
+
+    if (!id_transacao) {
+      return res.status(400).json({ error: 'id_transacao é obrigatório' });
+    }
+
+    // Antes de deletar a transação, deletar os registros associados na tabela modulo_transacao
+    await ModuloTransacao.destroy({ where: { id_transacao } });
+
+    // Agora podemos deletar a transação da tabela transacao
+    await Transacao.destroy({ where: { id_transacao } });
+
+    res.status(204).end(); // Resposta 204 No Content
+  } catch (error) {
+    console.error('Erro ao excluir transação:', error);
+    res.status(500).json({ error: 'Erro ao excluir transação' });
   }
 }

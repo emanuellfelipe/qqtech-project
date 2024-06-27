@@ -1,4 +1,3 @@
-// models/ModuloFuncao.js
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../config/db');
 const Modulo = require('./Modulo');
@@ -16,7 +15,7 @@ ModuloFuncao.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Modulo',
+      model: Modulo,
       key: 'id_modulo',
     },
     onDelete: 'CASCADE',
@@ -26,7 +25,7 @@ ModuloFuncao.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Funcao',
+      model: Funcao,
       key: 'id_funcao',
     },
     onDelete: 'CASCADE',
@@ -38,5 +37,17 @@ ModuloFuncao.init({
   tableName: 'modulo_funcao',
   timestamps: false,
 });
+
+ModuloFuncao.associateFunctions = async function (id_modulo, funcoes) {
+  try {
+    await ModuloFuncao.destroy({ where: { id_modulo } });
+
+    const moduloFuncoes = funcoes.map(id_funcao => ({ id_modulo, id_funcao }));
+    await ModuloFuncao.bulkCreate(moduloFuncoes);
+  } catch (error) {
+    console.error('Erro ao associar funções ao módulo:', error);
+    throw error;
+  }
+};
 
 module.exports = ModuloFuncao;

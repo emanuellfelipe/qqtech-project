@@ -8,7 +8,6 @@ import Footer from '/src/components/Footer';
 import Sidebar from '/src/components/Sidebar'; 
 import Select from 'react-select';
 
-
 export default function PerfisAdminPage() {
     const [perfis, setPerfis] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -45,7 +44,7 @@ export default function PerfisAdminPage() {
                     throw new Error('Erro ao buscar módulos');
                 }
                 const data = await response.json();
-                setModulos(data);
+                setModulos(data.data || []); // Ensure data is set correctly
             } catch (error) {
                 console.error('Erro ao buscar módulos:', error);
             }

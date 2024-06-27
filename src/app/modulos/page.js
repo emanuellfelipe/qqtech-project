@@ -1,13 +1,12 @@
-// Página ModulosAdminPage.js
-
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Head from 'next/head';
 import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
-import "/src/styles/modulos.css";
-import Footer from '/src/components/Footer';
-import Sidebar from '/src/components/Sidebar';
+import Select from 'react-select';
+import "/src/styles/modulos.css"; 
+import Footer from '/src/components/Footer'; 
+import Sidebar from '/src/components/Sidebar'; 
 
 export default function ModulosAdminPage() {
     const [modulos, setModulos] = useState([]);
@@ -15,7 +14,7 @@ export default function ModulosAdminPage() {
     const [funcoes, setFuncoes] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newElemento, setNewElemento] = useState({ nome: '', descricao: '' });
+    const [newElemento, setNewElemento] = useState({ nome: '', descricao: '', modulos: [] }); // Adicionando o estado de modulos
     const [currentCategory, setCurrentCategory] = useState('modulos');
     const [isEditing, setIsEditing] = useState(false);
     const [editingElementId, setEditingElementId] = useState(null);
@@ -25,18 +24,21 @@ export default function ModulosAdminPage() {
         const fetchData = async () => {
             try {
                 const responseModulos = await axios.get('/api/modulos');
-                setModulos(responseModulos.data);
-
+                console.log('Dados recebidos de /api/modulos:', responseModulos.data);
+                setModulos(responseModulos.data.data || []);
+    
                 const responseTransacoes = await axios.get('/api/transacoes');
-                setTransacoes(responseTransacoes.data);
-
+                console.log('Dados recebidos de /api/transacoes:', responseTransacoes.data);
+                setTransacoes(responseTransacoes.data.data || []);
+    
                 const responseFuncoes = await axios.get('/api/funcoes');
-                setFuncoes(responseFuncoes.data);
+                console.log('Dados recebidos de /api/funcoes:', responseFuncoes.data);
+                setFuncoes(responseFuncoes.data.data || []);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
             }
         };
-
+    
         fetchData();
     }, []);
 
@@ -45,8 +47,8 @@ export default function ModulosAdminPage() {
     };
 
     const openModal = () => {
-        setIsEditing(false); // Garante que o modal esteja em modo de criação
-        setNewElemento({ nome: '', descricao: '' });
+        setIsEditing(false); 
+        setNewElemento({ nome: '', descricao: '', modulos: [] });
         setIsModalOpen(true);
     };
 
@@ -68,23 +70,23 @@ export default function ModulosAdminPage() {
                         nome_modulo: newElemento.nome,
                         descricao: newElemento.descricao,
                     });
-                    setModulos([...modulos, response.data]);
+                    setModulos([...modulos, response.data.data]);
                     break;
                 case 'transacoes':
                     response = await axios.post('/api/transacoes', {
                         nome_transacao: newElemento.nome,
                         descricao: newElemento.descricao,
                     });
-                    setTransacoes([...transacoes, response.data]);
+                    setTransacoes([...transacoes, response.data.data]);
                     break;
                 case 'funcoes':
                     response = await axios.post('/api/funcoes', newElemento);
-                    setFuncoes([...funcoes, response.data]);
+                    setFuncoes([...funcoes, response.data.data]);
                     break;
                 default:
                     break;
             }
-            setNewElemento({ nome: '', descricao: '' });
+            setNewElemento({ nome: '', descricao: '', modulos: [] });
             closeModal();
             alert('Elemento criado com sucesso!');
         } catch (error) {
@@ -94,7 +96,20 @@ export default function ModulosAdminPage() {
 
     const handleEditElemento = (elemento) => {
         setEditingElementId(elemento.id);
-        setEditElement({ nome: elemento.nome, descricao: elemento.descricao });
+        // Configurar o nome com base na categoria atual
+        switch (currentCategory) {
+            case 'modulos':
+                setEditElement({ nome: elemento.nome_modulo, descricao: elemento.descricao });
+                break;
+            case 'transacoes':
+                setEditElement({ nome: elemento.nome_transacao, descricao: elemento.descricao });
+                break;
+            case 'funcoes':
+                setEditElement({ nome: elemento.nome_funcoes, descricao: elemento.descricao });
+                break;
+            default:
+                break;
+        }
         setIsEditing(true);
         setIsModalOpen(true);
     };
@@ -108,21 +123,21 @@ export default function ModulosAdminPage() {
                         nome_modulo: editElement.nome,
                         descricao: editElement.descricao,
                     });
-                    setModulos(modulos.map(modulo => (modulo.id === editingElementId ? response.data : modulo)));
+                    setModulos(modulos.map(modulo => (modulo.id_modulo === editingElementId ? response.data.data : modulo)));
                     break;
                 case 'transacoes':
                     response = await axios.put(`/api/transacoes/${editingElementId}`, {
                         nome_transacao: editElement.nome,
                         descricao: editElement.descricao,
                     });
-                    setTransacoes(transacoes.map(transacao => (transacao.id === editingElementId ? response.data : transacao)));
+                    setTransacoes(transacoes.map(transacao => (transacao.id_transacao === editingElementId ? response.data.data : transacao)));
                     break;
                 case 'funcoes':
                     response = await axios.put(`/api/funcoes/${editingElementId}`, {
                         nome_funcoes: editElement.nome,
                         descricao: editElement.descricao,
                     });
-                    setFuncoes(funcoes.map(funcao => (funcao.id === editingElementId ? response.data : funcao)));
+                    setFuncoes(funcoes.map(funcao => (funcao.id_funcoes === editingElementId ? response.data.data : funcao)));
                     break;
                 default:
                     break;
@@ -135,6 +150,7 @@ export default function ModulosAdminPage() {
             console.error('Erro ao atualizar elemento:', error);
         }
     };
+    
 
     const handleDeleteElemento = async (id) => {
         if (confirm('Tem certeza de que deseja excluir este elemento?')) {
@@ -142,15 +158,15 @@ export default function ModulosAdminPage() {
                 switch (currentCategory) {
                     case 'modulos':
                         await axios.delete(`/api/modulos/${id}`);
-                        setModulos(modulos.filter(modulo => modulo.id !== id));
+                        setModulos(modulos.filter(modulo => modulo.id_modulo !== id));
                         break;
                     case 'transacoes':
                         await axios.delete(`/api/transacoes/${id}`);
-                        setTransacoes(transacoes.filter(transacao => transacao.id !== id));
+                        setTransacoes(transacoes.filter(transacao => transacao.id_transacao !== id));
                         break;
                     case 'funcoes':
                         await axios.delete(`/api/funcoes/${id}`);
-                        setFuncoes(funcoes.filter(funcao => funcao.id !== id));
+                        setFuncoes(funcoes.filter(funcao => funcao.id_funcao !== id));
                         break;
                     default:
                         break;
@@ -161,7 +177,8 @@ export default function ModulosAdminPage() {
             }
         }
     };
-
+    
+    
     const filteredItems = () => {
         const lowerCaseSearchTerm = searchTerm.toLowerCase().trim();
         switch (currentCategory) {
@@ -317,15 +334,24 @@ export default function ModulosAdminPage() {
                             </label>
                             <label>
                                 Descrição:
-                                <input
-                                    type="text"
+                                <textarea
+                                    id="descricao"
                                     name="descricao"
                                     value={isEditing ? editElement.descricao : newElemento.descricao}
                                     onChange={handleInputChange}
                                 />
                             </label>
-                            <div className="modal-buttons">
-                                <button type="button" className="cancel" onClick={closeModal}>Cancelar</button>
+                            {currentCategory !== 'modulos' && (
+                                <Select
+                                    id="modulos"
+                                    name="modulos"
+                                    isMulti
+                                    value={newElemento.modulos} // Valor selecionado
+                                    onChange={(selectedOptions) => handleInputChange({ target: { name: 'modulos', value: selectedOptions.map(option => option.value) } })}
+                                    options={modulos.map(modulo => ({ value: modulo.id_modulo, label: modulo.nome_modulo }))}
+                                />
+                            )}
+                            <div className="modal-footer">
                                 <button type="button" onClick={isEditing ? handleUpdateElemento : handleCreateElemento}>
                                     {isEditing ? 'Salvar Alterações' : 'Salvar'}
                                 </button>
@@ -337,4 +363,3 @@ export default function ModulosAdminPage() {
         </>
     );
 }
-
