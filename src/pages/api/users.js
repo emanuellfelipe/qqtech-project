@@ -88,47 +88,60 @@ async function getPerfis(req, res) {
   }
 }
 
+// Back dos Usuários (updateUser)
 async function updateUser(req, res) {
   try {
-    const { id_usuario } = req.query;
-    const { matricula, nome_completo, nome_usuario, email, senha, perfil } = req.body;
+      const { id_usuario } = req.query;
+      const { matricula, nome_completo, nome_usuario, email, senha, id_perfil } = req.body;
 
-    const usuario = await Usuario.findByPk(id_usuario);
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
-    }
-
-    const transaction = await sequelize.transaction();
-
-    try {
-      // Atualiza os dados do usuário
-      usuario.matricula = matricula;
-      usuario.nome_completo = nome_completo;
-      usuario.nome_usuario = nome_usuario;
-      usuario.email = email;
-
-      // Atualiza a senha apenas se fornecida
-      if (senha) {
-        usuario.senha = senha;
+      const usuario = await Usuario.findByPk(id_usuario);
+      if (!usuario) {
+          return res.status(404).json({ error: 'Usuário não encontrado' });
       }
 
-      await usuario.save({ transaction });
+      const transaction = await sequelize.transaction();
 
-      // Atualiza o perfil do usuário na tabela de associação
-      if (perfil && perfil.length > 0) {
-        await PerfilUsuario.associateUsers(id_usuario, perfil);
+      try {
+          // Atualiza os dados do usuário
+          usuario.matricula = matricula;
+          usuario.nome_completo = nome_completo;
+          usuario.nome_usuario = nome_usuario;
+          usuario.email = email;
+
+          // Atualiza a senha apenas se fornecida
+          if (senha) {
+              usuario.senha = senha;
+          }
+
+          await usuario.save({ transaction });
+
+          // Verifica se foi fornecido o id_perfil
+          if (id_perfil !== undefined && id_perfil !== null) {
+              // Verifica e atualiza o perfil do usuário
+              let perfilUsuario = await PerfilUsuario.findOne({
+                  where: { id_usuario }
+              });
+
+              if (perfilUsuario) {
+                  // Se já existir uma associação, atualiza o perfil
+                  perfilUsuario.id_perfil = id_perfil;
+                  await perfilUsuario.save({ transaction });
+              } else {
+                  // Caso não exista, cria uma nova associação
+                  perfilUsuario = await PerfilUsuario.create({ id_usuario, id_perfil }, { transaction });
+              }
+          }
+
+          await transaction.commit();
+          res.status(200).json({ ...usuario.toJSON(), id_perfil });
+      } catch (error) {
+          await transaction.rollback();
+          console.error('Erro ao atualizar usuário:', error);
+          res.status(500).json({ error: 'Erro ao atualizar usuário' });
       }
-
-      await transaction.commit();
-      res.status(200).json(usuario);
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Erro ao atualizar usuário:', error);
-      res.status(500).json({ error: 'Erro ao atualizar usuário' });
-    }
   } catch (error) {
-    console.error('Erro ao iniciar transação:', error);
-    res.status(500).json({ error: 'Erro ao atualizar usuário' });
+      console.error('Erro ao iniciar transação:', error);
+      res.status(500).json({ error: 'Erro ao atualizar usuário' });
   }
 }
 

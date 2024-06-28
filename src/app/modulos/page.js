@@ -58,8 +58,13 @@ export default function ModulosAdminPage() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewElemento({ ...newElemento, [name]: value });
+        if (isEditing) {
+            setEditElement({ ...editElement, [name]: value });
+        } else {
+            setNewElemento({ ...newElemento, [name]: value });
+        }
     };
+    
 
     const handleCreateElemento = async () => {
         try {
@@ -80,9 +85,12 @@ export default function ModulosAdminPage() {
                     setTransacoes([...transacoes, response.data.data]);
                     break;
                 case 'funcoes':
-                    response = await axios.post('/api/funcoes', newElemento);
+                    response = await axios.post('/api/funcoes', {
+                        nome_funcoes: newElemento.nome, // Corrigido para nome_funcoes
+                        descricao: newElemento.descricao,
+                    });
                     setFuncoes([...funcoes, response.data.data]);
-                    break;
+                    break
                 default:
                     break;
             }
@@ -95,8 +103,7 @@ export default function ModulosAdminPage() {
     };
 
     const handleEditElemento = (elemento) => {
-        setEditingElementId(elemento.id);
-        // Configurar o nome com base na categoria atual
+        setEditingElementId(elemento.id_modulo || elemento.id_transacao || elemento.id_funcao);
         switch (currentCategory) {
             case 'modulos':
                 setEditElement({ nome: elemento.nome_modulo, descricao: elemento.descricao });
@@ -113,45 +120,51 @@ export default function ModulosAdminPage() {
         setIsEditing(true);
         setIsModalOpen(true);
     };
-
+    
     const handleUpdateElemento = async () => {
         try {
-            let response;
-            switch (currentCategory) {
-                case 'modulos':
-                    response = await axios.put(`/api/modulos/${editingElementId}`, {
-                        nome_modulo: editElement.nome,
-                        descricao: editElement.descricao,
-                    });
-                    setModulos(modulos.map(modulo => (modulo.id_modulo === editingElementId ? response.data.data : modulo)));
-                    break;
-                case 'transacoes':
-                    response = await axios.put(`/api/transacoes/${editingElementId}`, {
-                        nome_transacao: editElement.nome,
-                        descricao: editElement.descricao,
-                    });
-                    setTransacoes(transacoes.map(transacao => (transacao.id_transacao === editingElementId ? response.data.data : transacao)));
-                    break;
-                case 'funcoes':
-                    response = await axios.put(`/api/funcoes/${editingElementId}`, {
-                        nome_funcoes: editElement.nome,
-                        descricao: editElement.descricao,
-                    });
-                    setFuncoes(funcoes.map(funcao => (funcao.id_funcoes === editingElementId ? response.data.data : funcao)));
-                    break;
-                default:
-                    break;
-            }
-            setEditElement({ nome: '', descricao: '' });
-            setIsEditing(false);
-            setIsModalOpen(false);
-            alert('Elemento atualizado com sucesso!');
+          let response;
+          switch (currentCategory) {
+            case 'modulos':
+              response = await axios.put(`/api/modulos`, {
+                id_modulo: editingElementId,
+                nome_modulo: editElement.nome,
+                descricao: editElement.descricao,
+                perfis: editElement.perfis,
+                funcoes: editElement.funcoes,
+                transacoes: editElement.transacoes,
+              });
+              setModulos(modulos.map(modulo => (modulo.id_modulo === editingElementId ? response.data.data : modulo)));
+              break;
+            case 'transacoes':
+              response = await axios.put(`/api/transacoes`, {
+                id_transacao: editingElementId,
+                nome_transacao: editElement.nome,
+                descricao: editElement.descricao,
+              });
+              setTransacoes(transacoes.map(transacao => (transacao.id_transacao === editingElementId ? response.data.data : transacao)));
+              break;
+            case 'funcoes':
+              response = await axios.put(`/api/funcoes`, {
+                id_funcao: editingElementId,
+                nome_funcoes: editElement.nome,
+                descricao: editElement.descricao,
+              });
+              setFuncoes(funcoes.map(funcao => (funcao.id_funcao === editingElementId ? response.data.data : funcao)));
+              break;
+            default:
+              break;
+          }
+          setEditElement({ nome: '', descricao: '', perfis: [], funcoes: [], transacoes: [] });
+          setIsEditing(false);
+          setIsModalOpen(false);
+          alert('Elemento atualizado com sucesso!');
         } catch (error) {
-            console.error('Erro ao atualizar elemento:', error);
+          console.error('Erro ao atualizar elemento:', error);
         }
-    };
+      };
+      
     
-
     const handleDeleteElemento = async (id) => {
         if (confirm('Tem certeza de que deseja excluir este elemento?')) {
             try {

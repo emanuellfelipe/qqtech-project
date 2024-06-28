@@ -1,12 +1,10 @@
-const { DataTypes, Model } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const Modulo = require('./Modulo');
 const Funcao = require('./Funcao');
 
-class ModuloFuncao extends Model {}
-
-ModuloFuncao.init({
-  id: {
+const ModuloFuncao = sequelize.define('ModuloFuncao', {
+  id_modulo_funcao: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
@@ -32,20 +30,20 @@ ModuloFuncao.init({
     onUpdate: 'CASCADE',
   },
 }, {
-  sequelize,
-  modelName: 'ModuloFuncao',
   tableName: 'modulo_funcao',
   timestamps: false,
 });
 
-ModuloFuncao.associateFunctions = async function (id_modulo, funcoes) {
+ModuloFuncao.associateModules = async function (id_funcao, modulos) {
   try {
-    await ModuloFuncao.destroy({ where: { id_modulo } });
+    // Remover todos os módulos associados à função
+    await ModuloFuncao.destroy({ where: { id_funcao } });
 
-    const moduloFuncoes = funcoes.map(id_funcao => ({ id_modulo, id_funcao }));
-    await ModuloFuncao.bulkCreate(moduloFuncoes);
+    // Associar os novos módulos à função
+    const funcaoModulos = modulos.map(id_modulo => ({ id_funcao, id_modulo }));
+    await ModuloFuncao.bulkCreate(funcaoModulos);
   } catch (error) {
-    console.error('Erro ao associar funções ao módulo:', error);
+    console.error('Erro ao associar módulos à função:', error);
     throw error;
   }
 };

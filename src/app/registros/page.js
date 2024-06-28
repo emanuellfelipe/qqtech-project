@@ -98,11 +98,11 @@ export default function UserAdminPage() {
                 email: editedEmail,
                 nome_completo: editedNomeCompleto,
                 matricula: editedMatricula,
-                perfil: selectedPerfil ? selectedPerfil.value : null
+                id_perfil: selectedPerfil ? selectedPerfil.value : null // Corrigido para id_perfil
             };
-
+    
             const response = await axios.put(`/api/users?id_usuario=${updatedUser.id_usuario}`, updatedUser);
-
+    
             if (response.status === 200) {
                 setUsers(users.map(user => (user.id_usuario === updatedUser.id_usuario ? updatedUser : user)));
                 setIsModalOpen(false);
@@ -115,7 +115,7 @@ export default function UserAdminPage() {
             alert('Erro ao editar usuário. Tente novamente.');
         }
     };
-
+    
     const handleDeleteUser = async (matricula) => {
         const userToDelete = users.find(user => user.matricula === matricula);
 

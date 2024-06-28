@@ -35,19 +35,4 @@ const PerfilUsuario = sequelize.define('PerfilUsuario', {
     timestamps: false
 });
 
-// Função para associar usuários a um perfil
-PerfilUsuario.associateUsers = async function (id_perfil, usuarios) {
-  try {
-    // Remover todos os usuários associados ao perfil
-    await PerfilUsuario.destroy({ where: { id_perfil } });
-
-    // Associar os novos usuários ao perfil
-    const perfilUsuarios = usuarios.map(id_usuario => ({ id_perfil, id_usuario }));
-    await PerfilUsuario.bulkCreate(perfilUsuarios);
-  } catch (error) {
-    console.error('Erro ao associar usuários ao perfil:', error);
-    throw error;
-  }
-};
-
 module.exports = PerfilUsuario;

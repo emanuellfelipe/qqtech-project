@@ -1,3 +1,4 @@
+// src/pages/api/funcoes.js
 const { Funcao, ModuloFuncao, Modulo } = require('../../models/associations');
 
 export default async function handler(req, res) {
@@ -25,7 +26,7 @@ async function getFuncoes(req, res) {
     const funcoes = await Funcao.findAll({
       include: {
         model: Modulo,
-        through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
+        through: { attributes: [] },
       }
     });
     res.status(200).json({ success: true, data: funcoes });
@@ -37,14 +38,11 @@ async function getFuncoes(req, res) {
 
 async function createFuncao(req, res) {
   try {
-    const { nome_funcao, descricao, modulos } = req.body;
-    const funcao = await Funcao.create({ nome_funcao, descricao });
+    const { nome_funcoes, descricao, modulos } = req.body;
+    const funcao = await Funcao.create({ nome_funcoes, descricao });
 
     if (modulos && modulos.length > 0) {
-      await ModuloFuncao.bulkCreate(modulos.map(moduloId => ({
-        id_funcao: funcao.id_funcao,
-        id_modulo: moduloId
-      })));
+      await ModuloFuncao.associateModules(funcao.id_funcao, modulos);
     }
 
     res.status(201).json({ success: true, data: funcao, message: 'Função criada com sucesso' });
@@ -57,23 +55,16 @@ async function createFuncao(req, res) {
 async function updateFuncao(req, res) {
   try {
     const { id_funcao } = req.query;
-    const { nome_funcao, descricao, modulos } = req.body;
+    const { nome_funcoes, descricao, modulos } = req.body;
 
     const funcao = await Funcao.findByPk(id_funcao);
     if (!funcao) {
       return res.status(404).json({ success: false, message: 'Função não encontrada' });
     }
 
-    await funcao.update({ nome_funcao, descricao });
+    await funcao.update({ nome_funcoes, descricao });
 
-    // Atualizar módulos associados à função
-    await ModuloFuncao.destroy({ where: { id_funcao } });
-    if (modulos && modulos.length > 0) {
-      await ModuloFuncao.bulkCreate(modulos.map(moduloId => ({
-        id_funcao: id_funcao,
-        id_modulo: moduloId
-      })));
-    }
+    await ModuloFuncao.associateModules(funcao.id_funcao, modulos);
 
     res.status(200).json({ success: true, data: funcao, message: 'Função atualizada com sucesso' });
   } catch (error) {
@@ -90,13 +81,11 @@ async function deleteFuncao(req, res) {
       return res.status(400).json({ error: 'id_funcao é obrigatório' });
     }
 
-    // Antes de deletar a função, deletar os registros associados na tabela modulo_funcao
     await ModuloFuncao.destroy({ where: { id_funcao } });
 
-    // Agora podemos deletar a função da tabela funcao
     await Funcao.destroy({ where: { id_funcao } });
 
-    res.status(204).end(); // Resposta 204 No Content
+    res.status(204).end();
   } catch (error) {
     console.error('Erro ao excluir função:', error);
     res.status(500).json({ error: 'Erro ao excluir função' });

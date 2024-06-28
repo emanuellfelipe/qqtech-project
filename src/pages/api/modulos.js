@@ -38,7 +38,7 @@ async function getModulos(req, res) {
         }
       ]
     });
-    
+
     res.status(200).json({ success: true, data: modulos });
   } catch (error) {
     console.error('Erro ao buscar módulos:', error);
@@ -53,17 +53,17 @@ async function createModulo(req, res) {
 
     // Associar perfis ao módulo
     if (perfis && perfis.length > 0) {
-      await PerfilModulo.associate(modulo, perfis);
+      await PerfilModulo.associateModules(modulo.id_modulo, perfis);
     }
 
     // Associar funções ao módulo
     if (funcoes && funcoes.length > 0) {
-      await Funcao.associate(modulo, funcoes);
+      await Funcao.associateModules(modulo.id_modulo, funcoes);
     }
 
     // Associar transações ao módulo
     if (transacoes && transacoes.length > 0) {
-      await Transacao.associate(modulo, transacoes);
+      await Transacao.associateModules(modulo.id_modulo, transacoes);
     }
 
     res.status(201).json({ success: true, data: modulo, message: 'Módulo criado com sucesso' });
@@ -86,19 +86,13 @@ async function updateModulo(req, res) {
     await modulo.update({ nome_modulo, descricao });
 
     // Atualizar perfis associados ao módulo
-    if (perfis && perfis.length > 0) {
-      await PerfilModulo.associate(modulo, perfis);
-    }
+    await PerfilModulo.associateModules(modulo.id_modulo, perfis);
 
     // Atualizar funções associadas ao módulo
-    if (funcoes && funcoes.length > 0) {
-      await Funcao.associate(modulo, funcoes);
-    }
+    await Funcao.associateModules(modulo.id_modulo, funcoes);
 
     // Atualizar transações associadas ao módulo
-    if (transacoes && transacoes.length > 0) {
-      await Transacao.associate(modulo, transacoes);
-    }
+    await Transacao.associateModules(modulo.id_modulo, transacoes);
 
     res.status(200).json({ success: true, data: modulo, message: 'Módulo atualizado com sucesso' });
   } catch (error) {

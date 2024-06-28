@@ -1,5 +1,4 @@
 // src/pages/api/perfis.js
-
 const { Perfil, PerfilModulo, PerfilUsuario, Modulo } = require('../../models/associations');
 
 export default async function handler(req, res) {

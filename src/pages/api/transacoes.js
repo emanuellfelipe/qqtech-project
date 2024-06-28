@@ -1,3 +1,4 @@
+// src/pages/api/transacoes.js
 const { Transacao, ModuloTransacao, Modulo } = require('../../models/associations');
 
 export default async function handler(req, res) {
@@ -41,10 +42,7 @@ async function createTransacao(req, res) {
     const transacao = await Transacao.create({ nome_transacao, descricao });
 
     if (modulos && modulos.length > 0) {
-      await ModuloTransacao.bulkCreate(modulos.map(moduloId => ({
-        id_transacao: transacao.id_transacao,
-        id_modulo: moduloId
-      })));
+      await ModuloTransacao.associateModules(transacao.id_transacao, modulos);
     }
 
     res.status(201).json({ success: true, data: transacao, message: 'Transação criada com sucesso' });
@@ -67,13 +65,7 @@ async function updateTransacao(req, res) {
     await transacao.update({ nome_transacao, descricao });
 
     // Atualizar módulos associados à transação
-    await ModuloTransacao.destroy({ where: { id_transacao } });
-    if (modulos && modulos.length > 0) {
-      await ModuloTransacao.bulkCreate(modulos.map(moduloId => ({
-        id_transacao: id_transacao,
-        id_modulo: moduloId
-      })));
-    }
+    await ModuloTransacao.associateModules(transacao.id_transacao, modulos);
 
     res.status(200).json({ success: true, data: transacao, message: 'Transação atualizada com sucesso' });
   } catch (error) {
