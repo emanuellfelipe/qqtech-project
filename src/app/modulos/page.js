@@ -191,7 +191,43 @@ export default function ModulosAdminPage() {
         }
     };
     
+    const handleDownloadReport = async () => {
+        if (!currentCategory) {
+            alert('Nenhuma categoria selecionada. Selecione uma categoria para baixar o relatório.');
+            return; // Interrompe a execução se nenhuma categoria for selecionada
+        }
     
+        try {
+            const categoryPath = currentCategory; // A categoria atual é usada para o caminho
+            const fileName = `${categoryPath}.xlsx`;
+    
+            const response = await fetch(`http://localhost:5000/download/${categoryPath}`);
+            if (!response.ok) {
+                throw new Error('Erro ao baixar o relatório');
+            }
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = fileName; // O nome do arquivo é baseado na categoria atual
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            alert('Relatório baixado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao baixar o relatório:', error);
+            alert('Erro ao baixar o relatório. Tente novamente.');
+        }
+    };
+    const onDownloadReportClick = () => {
+        if (!currentCategory) {
+          alert('Nenhuma categoria selecionada. Selecione uma categoria para baixar o relatório.');
+          return;
+        }
+        handleDownloadReport();
+      };
+
     const filteredItems = () => {
         const lowerCaseSearchTerm = searchTerm.toLowerCase().trim();
         switch (currentCategory) {
@@ -326,7 +362,10 @@ export default function ModulosAdminPage() {
                         </tbody>
                     </table>
                 </div>
-                <button id="criar-elemento" onClick={openModal}>Criar Novo Elemento</button>
+                    <div id="button-container">
+                        <button id="baixar-relatorio" onClick={onDownloadReportClick}>Baixar Relatório</button>
+                        <button id="criar-elemento" onClick={openModal}>Criar Novo Elemento</button>
+                    </div>
             </div>
             <Footer />
 

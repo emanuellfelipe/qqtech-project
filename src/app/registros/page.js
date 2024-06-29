@@ -138,6 +138,31 @@ export default function UserAdminPage() {
         }
     };
 
+ const handleDownloadReport = async () => {
+        try {
+            // Substitua "http://localhost:5000" pelo endereço do seu servidor FastAPI
+            const response = await fetch(`http://localhost:5000/download/usuario`);
+            if (!response.ok) {
+                throw new Error('Erro ao baixar o relatório');
+            }
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            // O nome do arquivo pode ser dinâmico baseado no nome da tabela
+            a.download = 'Usuários.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            alert('Relatório baixado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao baixar o relatório:', error);
+            alert('Erro ao baixar o relatório. Tente novamente.');
+        }
+    };
+    
+
     const filteredUsers = users.filter(user =>
         (user.nome_usuario && user.nome_usuario.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (user.matricula && user.matricula.toString().includes(searchTerm))
@@ -187,7 +212,10 @@ export default function UserAdminPage() {
                         </tbody>
                     </table>
                 </div>
-                <button id="criar-usuario" onClick={() => window.location.href = '/novoRegistro'}>Criar Novo Usuário</button>
+                <div id="button-container">
+                    <button id="baixar-relatorio" onClick={handleDownloadReport}>Baixar Relatório</button>
+                    <button id="criar-usuario" onClick={() => window.location.href = '/novoRegistro'}>Criar Novo Usuário</button>
+                </div>
             </div>
             <Footer />
 
@@ -245,6 +273,7 @@ export default function UserAdminPage() {
                         </div>
                         <div className="modal-footer">
                             <button onClick={handleSaveChanges}>Salvar Alterações</button>
+                            
                         </div>
                     </div>
                 </div>

@@ -1,14 +1,20 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Response
+from fastapi.responses import FileResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
+import pandas as pd
+import uvicorn
 import string
 import secrets
+from io import BytesIO
+from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
-# Configuração do banco de dados
+# Configuração do banco de dados FastAPI
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/postgres"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -87,7 +93,35 @@ def generate_reset_code(length=8):
     code = ''.join(secrets.choice(alphabet) for i in range(length))
     return code
 
-# Endpoints
+# Endpoint para download de dados como Excel
+
+@app.get('/download/{table_name}')
+def download(table_name: str, db: Session = Depends(get_db)):
+    try:
+        # Executar a query e armazenar os dados em um DataFrame do pandas
+        df = pd.read_sql_table(table_name, engine)
+        
+        # Verificar se o DataFrame está vazio
+        if df.empty:
+            raise HTTPException(status_code=404, detail=f"A tabela {table_name} está vazia")
+
+        # Converter o DataFrame para um arquivo Excel em memória
+        excel_io = BytesIO()
+        df.to_excel(excel_io, index=False)
+        excel_io.seek(0)
+        
+        # Enviar o arquivo Excel como resposta
+        return StreamingResponse(
+            excel_io,
+            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers={'Content-Disposition': f'attachment; filename={table_name}.xlsx'}
+        )
+    except Exception as e:
+        print(f"Erro ao gerar o arquivo Excel: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao gerar o arquivo Excel")
+
+    
+# Endpoints para recuperação e redefinição de senha (mantidos da implementação anterior)
 @app.post("/api/forgot-password")
 async def forgot_password(payload: EmailSchema, db: Session = Depends(get_db)):
     try:
@@ -163,5 +197,4 @@ def login(login_data: Login, db: Session = Depends(get_db)):
 
 # Execução do aplicativo com uvicorn
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="localhost", port=5000)

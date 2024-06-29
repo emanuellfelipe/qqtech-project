@@ -5,38 +5,37 @@ body, html {
     margin: 0;
     padding: 0;
 }
-
 body {
     display: flex;
     justify-content: space-between;
-    width: 100%; /* Alterado para largura total */
-    min-height: 100vh; /* Alterado para altura mínima de 100% da viewport */
-    background-color: #b2fdba;
+    width: 1440px;
+    height: 1024px;
+    background-color: #B2FDBA;
     font-family: 'Roboto', sans-serif;
 }
-
-/* Estilos do conteúdo principal */
 #main-content {
-    margin-left: 400px; /* Aumenta o espaçamento entre o menu e o card */
-    margin-bottom: 60px; /* Espaço para o footer */
-    margin-top: 64px; /* Adiciona espaçamento acima */
+    margin-left: 400px;
+    margin-bottom: 60px;
+    margin-top: 64px;
     padding-left: 60px;
     padding-right: 60px;
-    padding-top: 26px; /* Aumenta o espaçamento superior */
+    padding-top: 26px;
     padding-bottom: 30px;
-    background-color: #ffffff; /* Cor de fundo do card */
-    border: 2px solid #01ab45; /* Borda verde do card */
-    border-radius: 16px; /* Bordas arredondadas */
-    width: calc(70% - 260px - 60px); /* Largura ajustada */
-    min-height: 50vh; /* Altura mínima de 50% da viewport */
+    background-color: #FFFFFF;
+    border: 2px solid #01AB45;
+    border-radius: 16px;
+    width: calc(70% - 260px - 60px);
+    height: 50%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Mantém o botão na parte debaixo */
+    justify-content: space-between;
 }
 
 #main-content h1 {
-    color: #21272a; /* Cor verde para o título */
-    text-align: center; /* Alinha à esquerda */
+    color: #21272A;
+    text-align: center;
+    font-size: 36px; /* Tamanho do título aumentado */
+    border: none;
 }
 
 /* Alinhando o search-wrapper no canto direito e o search-title no canto esquerdo */
@@ -109,8 +108,19 @@ body {
 .action-button:hover {
     color: #960101;
 }
+
+#button-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+#button-container button {
+    flex: 1;
+}
+
 #criar-perfil {
-    padding: 10px 20px;
+    padding: 10px 5px;
     background-color: #01ab45;
     color: white;
     border: none;
@@ -119,11 +129,32 @@ body {
     width: 40%;
     align-self: center;
     margin-top: auto;
+    margin-right: 0; /* Remove a margem à direita do botão */
+    float: left; /* Alinha os botões lado a lado */
 }
 
 #criar-perfil:hover {
     background-color: #019639;
 }
+#baixar-relatorio {
+    border-radius: 12px;
+    cursor: pointer;
+    width: 40%;
+    align-self: center;
+    margin-top: auto;
+    margin-right: 0;
+    padding: 10px 5px;
+    background-color: #ffffff;
+    color: #01ab45;
+    border: 1px solid #01ab45;
+}
+
+#baixar-relatorio:hover {
+    background-color: #f2f2f2;
+    color: #019639;
+    border-color: #019639;
+}
+
 
 .modal {
     display: flex;

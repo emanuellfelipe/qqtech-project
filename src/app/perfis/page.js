@@ -131,6 +131,30 @@ export default function PerfisAdminPage() {
         setNewPerfil({ ...newPerfil, modulos: selectedOptions.map(option => option.value) });
     };
 
+    const handleDownloadReport = async () => {
+    try {
+        const response = await fetch(`http://localhost:5000/download/perfil`);
+        if (!response.ok) {
+            throw new Error('Erro ao baixar o relatório');
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'perfil.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        alert('Relatório baixado com sucesso!');
+    } catch (error) {
+        console.error('Erro ao baixar o relatório:', error);
+        alert('Erro ao baixar o relatório. Tente novamente.');
+    }
+};
+
+    
+
     const filteredPerfis = perfis.filter(perfil =>
         perfil &&
         ((perfil.descricao && perfil.descricao.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -204,7 +228,10 @@ export default function PerfisAdminPage() {
                         ))}
                     </tbody>
                 </table>
-                <button id="criar-perfil" onClick={handleOpenNewPerfilModal}>Criar Novo Perfil</button>
+                <div id="button-container">
+                    <button id="baixar-relatorio" onClick={handleDownloadReport}>Baixar Relatório</button>
+                    <button id="criar-perfil" onClick={handleOpenNewPerfilModal}>Criar Novo Perfil</button>
+                </div>
             </div>
             <Footer />
 
@@ -221,30 +248,30 @@ export default function PerfisAdminPage() {
                                 name="nome_perfil" 
                                 value={newPerfil.nome_perfil}
                                 onChange={handleInputChange}
-                            />
-                            <label htmlFor="descricao">Descrição:</label>
-                            <textarea 
-                                id="descricao" 
-                                name="descricao" 
-                                value={newPerfil.descricao}
-                                onChange={handleInputChange}
-                            />
-                            <label htmlFor="modulos">Módulos:</label>
-                            <Select
-                                id="modulos"
-                                name="modulos"
-                                isMulti
-                                value={selectedModulos}
-                                onChange={handleChangeSelect}
-                                options={options}
-                            />
-                        </div>
-                        <div className="modal-footer">
-                            <button onClick={handleCreateOrEditPerfil}>{isEditing ? 'Salvar Alterações' : 'Criar Perfil'}</button>
+                                />
+                                <label htmlFor="descricao">Descrição:</label>
+                                <textarea 
+                                    id="descricao" 
+                                    name="descricao" 
+                                    value={newPerfil.descricao}
+                                    onChange={handleInputChange}
+                                />
+                                <label htmlFor="modulos">Módulos:</label>
+                                <Select
+                                    id="modulos"
+                                    name="modulos"
+                                    isMulti
+                                    value={selectedModulos}
+                                    onChange={handleChangeSelect}
+                                    options={options}
+                                />
+                            </div>
+                            <div className="modal-footer">
+                                <button onClick={handleCreateOrEditPerfil}>{isEditing ? 'Salvar Alterações' : 'Criar Perfil'}</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </>
-    );
-}
+                )}
+            </>
+        );
+    }

@@ -119,9 +119,17 @@ body {
     height: 30px;
     font-size: 14px;
 }
+#button-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
 
+#button-container button {
+    flex: 1;
+}
 #criar-elemento {
-    padding: 10px 20px;
+    padding: 10px 5px;
     background-color: #01ab45;
     color: white;
     border: none;
@@ -130,10 +138,30 @@ body {
     width: 40%;
     align-self: center;
     margin-top: auto;
+    margin-right: 0; /* Remove a margem à direita do botão */
+    float: left; /* Alinha os botões lado a lado */
 }
 
 #criar-elemento:hover {
     background-color: #019639;
+}
+#baixar-relatorio {
+    border-radius: 12px;
+    cursor: pointer;
+    width: 40%;
+    align-self: center;
+    margin-top: auto;
+    margin-right: 0;
+    padding: 10px 5px;
+    background-color: #ffffff;
+    color: #01ab45;
+    border: 1px solid #01ab45;
+}
+
+#baixar-relatorio:hover {
+    background-color: #f2f2f2;
+    color: #019639;
+    border-color: #019639;
 }
 
 .action-button {
