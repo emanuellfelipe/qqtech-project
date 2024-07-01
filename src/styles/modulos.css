@@ -28,6 +28,8 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    
+    
 }
 
 #main-content h1 {
@@ -37,33 +39,29 @@ body {
     border: none;
 }
 
-.category-button {
-    background-color: transparent;
-    color: #000000; /* Cor padrão para botões não selecionados */
-    border: none;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
-    margin-right: 10px;
-    font-size: 16px;
-    padding-bottom: 5px;
-    text-decoration: none; /* Remove sublinhado padrão dos links */
-}
-
-.category-button.selected {
-    border-bottom: 2px solid #01AB45;
-    color: #01AB45; /* Cor verde para o botão selecionado */
-}
-
-.category-button:hover {
-    color: #019639;
-}
-
 #search-wrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
     align-items: center;
     margin-bottom: 5px;
     position: relative;
+}
+
+.menu-item {
+    cursor: pointer;
+    color: rgb(0, 0, 0);
+    text-decoration: none; /* Garante que inicialmente não há sublinhado */
+    width: auto;
+    font-size: 16px;
+    padding-top: 12px;
+    margin-right:20px;
+
+    /* Transição suave para o sublinhado */
+    transition: text-decoration 0.3s ease;
+}
+
+.menu-item:hover {
+    text-decoration: underline; /* Aplica o sublinhado quando há hover */
 }
 
 #search-title {
@@ -71,11 +69,13 @@ body {
     border-bottom: 2px solid #01AB45;
     width: auto;
     font-size: 16px;
-    padding-top: 16px;
+    padding-top: 12px;
+    margin-right:20px; 
 }
 
 #search-container {
-    position: relative;
+    position: absolute;
+    right: 0; /* Alinha o campo de busca à direita */
 }
 
 #search-icon {
@@ -95,16 +95,15 @@ body {
     width: auto;
     outline: none;
 }
-
 #table-container {
-    overflow-x: auto; /* Adiciona a rolagem horizontal */
-    width: 100%; /* Garante que o container ocupe toda a largura disponível */
+    overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
 }
-
 #main-content table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    overflow-y: auto; /* Adiciona uma barra de rolagem vertical se necessário */
+    max-height: 500px;
 }
 
 #main-content th, #main-content td {
@@ -128,7 +127,7 @@ body {
 #button-container button {
     flex: 1;
 }
-#criar-elemento {
+#criar-modulo {
     padding: 10px 5px;
     background-color: #01ab45;
     color: white;
@@ -142,7 +141,7 @@ body {
     float: left; /* Alinha os botões lado a lado */
 }
 
-#criar-elemento:hover {
+#criar-modulo:hover {
     background-color: #019639;
 }
 #baixar-relatorio {

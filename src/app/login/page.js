@@ -101,12 +101,6 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="group">
-            <div className="controls-with-label">
-              <div className="controls">
-                <input type="checkbox" id="rememberMe" />
-              </div>
-              <div className="label-name">Lembre de mim</div>
-            </div>
             <div className="forgot-password" id="forgotPasswordText">
               <a href="/forgot">Esqueceu a Senha?</a>
             </div>

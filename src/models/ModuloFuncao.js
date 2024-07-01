@@ -15,9 +15,10 @@ const ModuloFuncao = sequelize.define('ModuloFuncao', {
     references: {
       model: Modulo,
       key: 'id_modulo',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
+ 
   },
   id_funcao: {
     type: DataTypes.INTEGER,
@@ -25,23 +26,23 @@ const ModuloFuncao = sequelize.define('ModuloFuncao', {
     references: {
       model: Funcao,
       key: 'id_funcao',
-    },
-    onDelete: 'CASCADE',
+      onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
+    },
   },
 }, {
   tableName: 'modulo_funcao',
   timestamps: false,
 });
 
-ModuloFuncao.associateModules = async function (id_funcao, modulos) {
+ModuloFuncao.associateFunctions = async function (id_funcao, modulos) {
   try {
     // Remover todos os módulos associados à função
     await ModuloFuncao.destroy({ where: { id_funcao } });
 
     // Associar os novos módulos à função
-    const funcaoModulos = modulos.map(id_modulo => ({ id_funcao, id_modulo }));
-    await ModuloFuncao.bulkCreate(funcaoModulos);
+    const moduloFuncoes = modulos.map(id_modulo => ({ id_funcao, id_modulo }));
+    await ModuloFuncao.bulkCreate(moduloFuncoes);
   } catch (error) {
     console.error('Erro ao associar módulos à função:', error);
     throw error;

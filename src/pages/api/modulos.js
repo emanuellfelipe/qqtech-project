@@ -1,4 +1,5 @@
-const { Modulo, PerfilModulo, Funcao, Transacao, Perfil } = require('../../models/associations');
+// src/pages/api/modulos.js
+const { Modulo, ModuloFuncao, ModuloTransacao, Funcao, Transacao } = require('../../models/associations');
 
 export default async function handler(req, res) {
   switch (req.method) {
@@ -25,20 +26,15 @@ async function getModulos(req, res) {
     const modulos = await Modulo.findAll({
       include: [
         {
-          model: Perfil,
-          through: { attributes: [] } // Para excluir os atributos da tabela intermediária
-        },
-        {
           model: Funcao,
-          through: { attributes: [] } // Para excluir os atributos da tabela intermediária ModuloFuncao
+          through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
         },
         {
           model: Transacao,
-          through: { attributes: [] } // Para excluir os atributos da tabela intermediária ModuloTransacao
+          through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
         }
       ]
     });
-
     res.status(200).json({ success: true, data: modulos });
   } catch (error) {
     console.error('Erro ao buscar módulos:', error);
@@ -48,22 +44,15 @@ async function getModulos(req, res) {
 
 async function createModulo(req, res) {
   try {
-    const { nome_modulo, descricao, perfis, funcoes, transacoes } = req.body;
+    const { nome_modulo, descricao, funcoes, transacoes } = req.body;
     const modulo = await Modulo.create({ nome_modulo, descricao });
 
-    // Associar perfis ao módulo
-    if (perfis && perfis.length > 0) {
-      await PerfilModulo.associateModules(modulo.id_modulo, perfis);
-    }
-
-    // Associar funções ao módulo
     if (funcoes && funcoes.length > 0) {
-      await Funcao.associateModules(modulo.id_modulo, funcoes);
+      await ModuloFuncao.associateFunctions(modulo.id_modulo, funcoes);
     }
 
-    // Associar transações ao módulo
     if (transacoes && transacoes.length > 0) {
-      await Transacao.associateModules(modulo.id_modulo, transacoes);
+      await ModuloTransacao.associateTransactions(modulo.id_modulo, transacoes);
     }
 
     res.status(201).json({ success: true, data: modulo, message: 'Módulo criado com sucesso' });
@@ -76,7 +65,7 @@ async function createModulo(req, res) {
 async function updateModulo(req, res) {
   try {
     const { id_modulo } = req.query;
-    const { nome_modulo, descricao, perfis, funcoes, transacoes } = req.body;
+    const { nome_modulo, descricao, funcoes, transacoes } = req.body;
 
     const modulo = await Modulo.findByPk(id_modulo);
     if (!modulo) {
@@ -85,14 +74,9 @@ async function updateModulo(req, res) {
 
     await modulo.update({ nome_modulo, descricao });
 
-    // Atualizar perfis associados ao módulo
-    await PerfilModulo.associateModules(modulo.id_modulo, perfis);
-
-    // Atualizar funções associadas ao módulo
-    await Funcao.associateModules(modulo.id_modulo, funcoes);
-
-    // Atualizar transações associadas ao módulo
-    await Transacao.associateModules(modulo.id_modulo, transacoes);
+    // Atualizar funções e transações associadas ao módulo
+    await ModuloFuncao.associateFunctions(modulo.id_modulo, funcoes);
+    await ModuloTransacao.associateTransactions(modulo.id_modulo, transacoes);
 
     res.status(200).json({ success: true, data: modulo, message: 'Módulo atualizado com sucesso' });
   } catch (error) {
@@ -109,14 +93,19 @@ async function deleteModulo(req, res) {
       return res.status(400).json({ error: 'id_modulo é obrigatório' });
     }
 
-    // Antes de deletar o módulo, deletar os registros associados nas tabelas de associação
-    await Promise.all([
-      PerfilModulo.destroy({ where: { id_modulo } }),
-      Funcao.destroy({ where: { id_modulo } }), // Aqui removemos de Funcao
-      Transacao.destroy({ where: { id_modulo } }) // Aqui removemos de Transacao
-    ]);
+    // Verificar se o módulo está associado a alguma função ou transação
+    const moduloFuncao = await ModuloFuncao.findOne({ where: { id_modulo } });
+    const moduloTransacao = await ModuloTransacao.findOne({ where: { id_modulo } });
 
-    // Agora podemos deletar o módulo da tabela modulo
+    if (moduloFuncao || moduloTransacao) {
+      return res.status(400).json({ error: 'Não é possível excluir o módulo pois está associado a uma função ou transação' });
+    }
+
+    // Antes de deletar o módulo, deletar os registros associados nas tabelas ModuloFuncao e ModuloTransacao
+    await ModuloFuncao.destroy({ where: { id_modulo } });
+    await ModuloTransacao.destroy({ where: { id_modulo } });
+
+    // Agora podemos deletar o módulo da tabela Modulo
     await Modulo.destroy({ where: { id_modulo } });
 
     res.status(204).end(); // Resposta 204 No Content

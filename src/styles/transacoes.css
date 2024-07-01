@@ -38,25 +38,43 @@ body {
     border: none;
 }
 
-/* Alinhando o search-wrapper no canto direito e o search-title no canto esquerdo */
 #search-wrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
     align-items: center;
     margin-bottom: 5px;
-    position: relative; /* Permite posicionar o ícone de pesquisa */
+    position: relative;
+}
+
+.menu-item {
+    cursor: pointer;
+    color: rgb(0, 0, 0);
+    text-decoration: none; /* Garante que inicialmente não há sublinhado */
+    width: auto;
+    font-size: 16px;
+    padding-top: 12px;
+    margin-right:20px;
+
+    /* Transição suave para o sublinhado */
+    transition: text-decoration 0.3s ease;
+}
+
+.menu-item:hover {
+    text-decoration: underline; /* Aplica o sublinhado quando há hover */
 }
 
 #search-title {
-    color: #01ab45;
-    border-bottom: 2px solid #01ab45;
-    width: auto; /* Define a largura automática para o título */
+    color: #01AB45;
+    border-bottom: 2px solid #01AB45;
+    width: auto;
     font-size: 16px;
-    padding-top: 16px;
+    padding-top: 12px;
+    margin-right:20px; 
 }
 
 #search-container {
-    position: relative;
+    position: absolute;
+    right: 0; /* Alinha o campo de busca à direita */
 }
 
 #search-icon {
@@ -121,9 +139,9 @@ body {
     flex: 1;
 }
 
-#criar-perfil {
+#criar-transacao {
     padding: 10px 5px;
-    background-color: #01ab45;
+    background-color: #01AB45;
     color: white;
     border: none;
     border-radius: 12px;
@@ -135,7 +153,7 @@ body {
     float: left; /* Alinha os botões lado a lado */
 }
 
-#criar-perfil:hover {
+#criar-transacao:hover {
     background-color: #019639;
 }
 #baixar-relatorio {
@@ -147,8 +165,8 @@ body {
     margin-right: 0;
     padding: 10px 5px;
     background-color: #ffffff;
-    color: #01ab45;
-    border: 1px solid #01ab45;
+    color: #01AB45;
+    border: 1px solid #01AB45;
 }
 
 #baixar-relatorio:hover {
@@ -217,7 +235,7 @@ body {
 }
 
 .modal-content input[type="text"]:focus {
-    border-bottom: 1px solid #01ab45; /* Borda verde com 1px de espessura */
+    border-bottom: 1px solid #01AB45; /* Borda verde com 1px de espessura */
 }
 .modal-content textarea#descricao {
     min-width: 95%;
@@ -233,7 +251,7 @@ body {
 }
 
 .modal-content textarea#descricao:focus {
-    border-color: #01ab45;
+    border-color: #01AB45;
     outline: none;
 }
 
@@ -251,22 +269,18 @@ body {
 }
 
 .select-container .select__control--is-focused {
-    border-color: #01ab45; /* Cor da borda verde quando o select está em foco */
+    border-color: #01AB45; /* Cor da borda verde quando o select está em foco */
     box-shadow: 0 0 0 2px rgba(1, 171, 69, 0.2); /* Sombra verde ao redor do select */
 }
 
 .select-container .select__multi-value {
-    background-color: #01ab45;
+    background-color: #01AB45;
     color: white;
 }
 
 .select-container .select__multi-value__remove {
     color: white;
     cursor: pointer;
-}
-
-.select-container .select__multi-value__remove:hover {
-    background-color: #017135;
 }
 
 /* Estilos para inputs e selects dentro do modal */
@@ -289,7 +303,7 @@ body {
 .modal-content input[type="password"]:focus,
 .modal-content textarea:focus,
 .modal-content .form-input:focus {
-    border-color: #01ab45;
+    border-color: #01AB45;
     border-radius: 4px;
     border-width: 2px;
     outline: none;
@@ -307,7 +321,7 @@ body {
 
 .modal-content select:focus,
 .modal-content .form-select:focus {
-    border-color: #01ab45;
+    border-color: #01AB45;
     border-radius: 8px;
     outline: none;
 }

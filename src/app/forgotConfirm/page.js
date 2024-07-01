@@ -64,7 +64,7 @@ export default function ForgotConfirmPage() {
                     </div>
                     <div className="form-2-fields-checkbox-b">
                         <div className="label-and-field">
-                            <label htmlFor="code" className="label">Código de redefinição</label>
+                            <label htmlFor="code" className="label">Código de Verificação</label>
                             <input
                                 type="text"
                                 id="code"

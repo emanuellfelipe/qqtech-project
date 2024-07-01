@@ -1,207 +1,171 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import Image from 'next/image';
 import Head from 'next/head';
 import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import '/src/styles/modulos.css';
+import Footer from '/src/components/Footer';
+import Sidebar from '/src/components/Sidebar';
 import Select from 'react-select';
-import "/src/styles/modulos.css"; 
-import Footer from '/src/components/Footer'; 
-import Sidebar from '/src/components/Sidebar'; 
 
 export default function ModulosAdminPage() {
     const [modulos, setModulos] = useState([]);
-    const [transacoes, setTransacoes] = useState([]);
-    const [funcoes, setFuncoes] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newElemento, setNewElemento] = useState({ nome: '', descricao: '', modulos: [] }); // Adicionando o estado de modulos
-    const [currentCategory, setCurrentCategory] = useState('modulos');
+    const [newModulo, setNewModulo] = useState({ nome_modulo: '', descricao: '', transacoes: [], funcoes: [] });
+    const [transacoes, setTransacoes] = useState([]);
+    const [funcoes, setFuncoes] = useState([]);
+    const [selectedTransacoes, setSelectedTransacoes] = useState([]);
+    const [selectedFuncoes, setSelectedFuncoes] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
-    const [editingElementId, setEditingElementId] = useState(null);
-    const [editElement, setEditElement] = useState({ nome: '', descricao: '' });
+    const [editingModuloId, setEditingModuloId] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchModulos = async () => {
             try {
-                const responseModulos = await axios.get('/api/modulos');
-                console.log('Dados recebidos de /api/modulos:', responseModulos.data);
-                setModulos(responseModulos.data.data || []);
-    
-                const responseTransacoes = await axios.get('/api/transacoes');
-                console.log('Dados recebidos de /api/transacoes:', responseTransacoes.data);
-                setTransacoes(responseTransacoes.data.data || []);
-    
-                const responseFuncoes = await axios.get('/api/funcoes');
-                console.log('Dados recebidos de /api/funcoes:', responseFuncoes.data);
-                setFuncoes(responseFuncoes.data.data || []);
+                const response = await fetch('/api/modulos');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar módulos');
+                }
+                const data = await response.json();
+                setModulos(data.data || []);
+                setIsLoading(false);
             } catch (error) {
-                console.error('Erro ao buscar dados:', error);
+                console.error('Erro ao buscar módulos:', error);
+                setError(error);
+                setIsLoading(false);
             }
         };
-    
-        fetchData();
+
+        const fetchTransacoes = async () => {
+            try {
+                const response = await fetch('/api/transacoes');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar transações');
+                }
+                const data = await response.json();
+                setTransacoes(data.data || []);
+            } catch (error) {
+                console.error('Erro ao buscar transações:', error);
+            }
+        };
+
+        const fetchFuncoes = async () => {
+            try {
+                const response = await fetch('/api/funcoes');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar funções');
+                }
+                const data = await response.json();
+                setFuncoes(data.data || []);
+            } catch (error) {
+                console.error('Erro ao buscar funções:', error);
+            }
+        };
+
+        fetchModulos();
+        fetchTransacoes();
+        fetchFuncoes();
     }, []);
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
+    
+    const redirectToTransacoes = () => {
+        window.location.href = '/transacoes';
+      };
+      
+      const redirectToFuncoes = () => {
+        window.location.href = '/funcoes';
+      };
 
-    const openModal = () => {
-        setIsEditing(false); 
-        setNewElemento({ nome: '', descricao: '', modulos: [] });
-        setIsModalOpen(true);
-    };
+    const handleCreateOrEditModulo = async () => {
+        const url = isEditing ? `/api/modulos?id_modulo=${editingModuloId}` : '/api/modulos';
+        const method = isEditing ? 'PUT' : 'POST';
 
-    const closeModal = () => {
-        setIsModalOpen(false);
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ...newModulo, transacoes: selectedTransacoes.map(transacao => transacao.value), funcoes: selectedFuncoes.map(funcao => funcao.value) }),
+            });
+
+            if (!response.ok) {
+                throw new Error(isEditing ? 'Erro ao editar módulo' : 'Erro ao criar módulo');
+            }
+
+            const data = await response.json();
+            const moduloAtualizado = data.data;
+
+            if (isEditing) {
+                setModulos(modulos.map(modulo => (modulo.id_modulo === editingModuloId ? moduloAtualizado : modulo)));
+            } else {
+                setModulos([...modulos, moduloAtualizado]);
+            }
+
+            setIsModalOpen(false);
+            setNewModulo({ nome_modulo: '', descricao: '', transacoes: [], funcoes: [] });
+            setSelectedTransacoes([]);
+            setSelectedFuncoes([]);
+            setIsEditing(false);
+            setEditingModuloId(null);
+            alert(isEditing ? 'Módulo editado com sucesso!' : 'Módulo criado com sucesso!');
+        } catch (error) {
+            console.error(isEditing ? 'Erro ao editar módulo:' : 'Erro ao criar módulo:', error);
+        }
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (isEditing) {
-            setEditElement({ ...editElement, [name]: value });
-        } else {
-            setNewElemento({ ...newElemento, [name]: value });
-        }
-    };
-    
-
-    const handleCreateElemento = async () => {
-        try {
-            let response;
-            switch (currentCategory) {
-                case 'modulos':
-                    response = await axios.post('/api/modulos', {
-                        nome_modulo: newElemento.nome,
-                        descricao: newElemento.descricao,
-                    });
-                    setModulos([...modulos, response.data.data]);
-                    break;
-                case 'transacoes':
-                    response = await axios.post('/api/transacoes', {
-                        nome_transacao: newElemento.nome,
-                        descricao: newElemento.descricao,
-                    });
-                    setTransacoes([...transacoes, response.data.data]);
-                    break;
-                case 'funcoes':
-                    response = await axios.post('/api/funcoes', {
-                        nome_funcoes: newElemento.nome, // Corrigido para nome_funcoes
-                        descricao: newElemento.descricao,
-                    });
-                    setFuncoes([...funcoes, response.data.data]);
-                    break
-                default:
-                    break;
-            }
-            setNewElemento({ nome: '', descricao: '', modulos: [] });
-            closeModal();
-            alert('Elemento criado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao criar elemento:', error);
-        }
+        setNewModulo({ ...newModulo, [name]: value });
     };
 
-    const handleEditElemento = (elemento) => {
-        setEditingElementId(elemento.id_modulo || elemento.id_transacao || elemento.id_funcao);
-        switch (currentCategory) {
-            case 'modulos':
-                setEditElement({ nome: elemento.nome_modulo, descricao: elemento.descricao });
-                break;
-            case 'transacoes':
-                setEditElement({ nome: elemento.nome_transacao, descricao: elemento.descricao });
-                break;
-            case 'funcoes':
-                setEditElement({ nome: elemento.nome_funcoes, descricao: elemento.descricao });
-                break;
-            default:
-                break;
-        }
+    const handleEditModulo = (modulo) => {
+        setNewModulo({
+            nome_modulo: modulo.nome_modulo,
+            descricao: modulo.descricao,
+            transacoes: modulo.Transacoes ? modulo.Transacoes.map(transacao => transacao.id_transacao) : [],
+            funcoes: modulo.Funcoes ? modulo.Funcoes.map(funcao => funcao.id_funcao) : []
+        });
+        setSelectedTransacoes(modulo.Transacoes ? modulo.Transacoes.map(transacao => ({ value: transacao.id_transacao, label: transacao.nome_transacao })) : []);
+        setSelectedFuncoes(modulo.Funcoes ? modulo.Funcoes.map(funcao => ({ value: funcao.id_funcao, label: funcao.nome_funcoes })) : []);
         setIsEditing(true);
+        setEditingModuloId(modulo.id_modulo);
         setIsModalOpen(true);
     };
-    
-    const handleUpdateElemento = async () => {
-        try {
-          let response;
-          switch (currentCategory) {
-            case 'modulos':
-              response = await axios.put(`/api/modulos`, {
-                id_modulo: editingElementId,
-                nome_modulo: editElement.nome,
-                descricao: editElement.descricao,
-                perfis: editElement.perfis,
-                funcoes: editElement.funcoes,
-                transacoes: editElement.transacoes,
-              });
-              setModulos(modulos.map(modulo => (modulo.id_modulo === editingElementId ? response.data.data : modulo)));
-              break;
-            case 'transacoes':
-              response = await axios.put(`/api/transacoes`, {
-                id_transacao: editingElementId,
-                nome_transacao: editElement.nome,
-                descricao: editElement.descricao,
-              });
-              setTransacoes(transacoes.map(transacao => (transacao.id_transacao === editingElementId ? response.data.data : transacao)));
-              break;
-            case 'funcoes':
-              response = await axios.put(`/api/funcoes`, {
-                id_funcao: editingElementId,
-                nome_funcoes: editElement.nome,
-                descricao: editElement.descricao,
-              });
-              setFuncoes(funcoes.map(funcao => (funcao.id_funcao === editingElementId ? response.data.data : funcao)));
-              break;
-            default:
-              break;
-          }
-          setEditElement({ nome: '', descricao: '', perfis: [], funcoes: [], transacoes: [] });
-          setIsEditing(false);
-          setIsModalOpen(false);
-          alert('Elemento atualizado com sucesso!');
-        } catch (error) {
-          console.error('Erro ao atualizar elemento:', error);
-        }
-      };
-      
-    
-    const handleDeleteElemento = async (id) => {
-        if (confirm('Tem certeza de que deseja excluir este elemento?')) {
+
+    const handleChangeSelectTransacoes = (selectedOptions) => {
+        setSelectedTransacoes(selectedOptions);
+        setNewModulo({ ...newModulo, transacoes: selectedOptions.map(option => option.value) });
+    };
+
+    const handleChangeSelectFuncoes = (selectedOptions) => {
+        setSelectedFuncoes(selectedOptions);
+        setNewModulo({ ...newModulo, funcoes: selectedOptions.map(option => option.value) });
+    };
+
+    const handleDeleteModulo = async (id_modulo) => {
+        if (confirm('Tem certeza de que deseja excluir este módulo?')) {
             try {
-                switch (currentCategory) {
-                    case 'modulos':
-                        await axios.delete(`/api/modulos/${id}`);
-                        setModulos(modulos.filter(modulo => modulo.id_modulo !== id));
-                        break;
-                    case 'transacoes':
-                        await axios.delete(`/api/transacoes/${id}`);
-                        setTransacoes(transacoes.filter(transacao => transacao.id_transacao !== id));
-                        break;
-                    case 'funcoes':
-                        await axios.delete(`/api/funcoes/${id}`);
-                        setFuncoes(funcoes.filter(funcao => funcao.id_funcao !== id));
-                        break;
-                    default:
-                        break;
-                }
-                alert('Elemento excluído com sucesso!');
+                await fetch(`/api/modulos?id_modulo=${id_modulo}`, {
+                    method: 'DELETE'
+                });
+                setModulos(modulos.filter(modulo => modulo.id_modulo !== id_modulo));
             } catch (error) {
-                console.error('Erro ao excluir elemento:', error);
+                console.error('Erro ao excluir módulo:', error);
+                alert('Erro ao excluir módulo. Tente novamente.');
             }
         }
     };
-    
+
     const handleDownloadReport = async () => {
-        if (!currentCategory) {
-            alert('Nenhuma categoria selecionada. Selecione uma categoria para baixar o relatório.');
-            return; // Interrompe a execução se nenhuma categoria for selecionada
-        }
-    
         try {
-            const categoryPath = currentCategory; // A categoria atual é usada para o caminho
-            const fileName = `${categoryPath}.xlsx`;
-    
-            const response = await fetch(`http://localhost:5000/download/${categoryPath}`);
+            const response = await fetch(`http://localhost:5000/download/modulo`);
             if (!response.ok) {
                 throw new Error('Erro ao baixar o relatório');
             }
@@ -210,7 +174,7 @@ export default function ModulosAdminPage() {
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = fileName; // O nome do arquivo é baseado na categoria atual
+            a.download = 'modulo.xlsx';
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -220,78 +184,37 @@ export default function ModulosAdminPage() {
             alert('Erro ao baixar o relatório. Tente novamente.');
         }
     };
-    const onDownloadReportClick = () => {
-        if (!currentCategory) {
-          alert('Nenhuma categoria selecionada. Selecione uma categoria para baixar o relatório.');
-          return;
-        }
-        handleDownloadReport();
-      };
 
-    const filteredItems = () => {
-        const lowerCaseSearchTerm = searchTerm.toLowerCase().trim();
-        switch (currentCategory) {
-            case 'modulos':
-                return modulos.filter(modulo =>
-                    modulo.nome_modulo.toLowerCase().includes(lowerCaseSearchTerm) ||
-                    modulo.descricao.toLowerCase().includes(lowerCaseSearchTerm)
-                );
-            case 'transacoes':
-                return transacoes.filter(transacao =>
-                    transacao.nome_transacao.toLowerCase().includes(lowerCaseSearchTerm) ||
-                    transacao.descricao.toLowerCase().includes(lowerCaseSearchTerm)
-                );
-            case 'funcoes':
-                return funcoes.filter(funcao =>
-                    funcao.nome_funcoes.toLowerCase().includes(lowerCaseSearchTerm) ||
-                    funcao.descricao.toLowerCase().includes(lowerCaseSearchTerm)
-                );
-            default:
-                return [];
-        }
-    };
+    const filteredModulos = modulos.filter(modulo =>
+        modulo &&
+        ((modulo.descricao && modulo.descricao.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (modulo.nome_modulo && modulo.nome_modulo.toLowerCase().includes(searchTerm.toLowerCase())))
+    );
 
-    const handleToggleCategory = (category) => {
-        setCurrentCategory(category);
-    };
+    const optionsTransacoes = transacoes.map(transacao => ({
+        value: transacao.id_transacao,
+        label: transacao.nome_transacao,
+    }));
 
-    const getTitleByCategory = () => {
-        switch (currentCategory) {
-            case 'modulos':
-                return 'Módulos';
-            case 'transacoes':
-                return 'Módulos - Transações';
-            case 'funcoes':
-                return 'Módulos - Funções';
-            default:
-                return 'Administração de Elementos';
-        }
-    };
+    const optionsFuncoes = funcoes.map(funcao => ({
+        value: funcao.id_funcao,
+        label: funcao.nome_funcoes,
+    }));
 
-    const getNameFieldByCategory = (item) => {
-        switch (currentCategory) {
-            case 'modulos':
-                return item.nome_modulo;
-            case 'transacoes':
-                return item.nome_transacao;
-            case 'funcoes':
-                return item.nome_funcoes;
-            default:
-                return '';
-        }
-    };
+    if (isLoading) {
+        return <div>Carregando...</div>;
+    }
 
-    const getModalTitleByCategory = () => {
-        switch (currentCategory) {
-            case 'modulos':
-                return isEditing ? 'Módulo' : 'Módulo';
-            case 'transacoes':
-                return isEditing ? 'Transação' : 'Transação';
-            case 'funcoes':
-                return isEditing ? 'Função' : 'Função';
-            default:
-                return 'Elemento';
-        }
+    if (error) {
+        return <div>Erro ao carregar dados: {error.message}</div>;
+    }
+
+    const handleOpenNewModuloModal = () => {
+        setNewModulo({ nome_modulo: '', descricao: '', transacoes: [], funcoes: [] });
+        setSelectedTransacoes([]);
+        setSelectedFuncoes([]);
+        setIsEditing(false);
+        setIsModalOpen(true);
     };
 
     return (
@@ -299,37 +222,20 @@ export default function ModulosAdminPage() {
             <Head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="initial-scale=1, width=device-width" />
-                <title>{getTitleByCategory()}</title> 
+                <title>Administração de Módulos</title>
             </Head>
             <Sidebar />
             <div id="main-content">
-                <h1 id="search-title">{getTitleByCategory()}</h1>
+                <h1>Módulos Existentes</h1>
                 <div id="search-wrapper">
-                    <div>
-                        <button
-                            className={`category-button ${currentCategory === 'modulos' ? 'selected' : ''}`}
-                            onClick={() => handleToggleCategory('modulos')}
-                        >
-                            Módulos
-                        </button>
-                        <button
-                            className={`category-button ${currentCategory === 'transacoes' ? 'selected' : ''}`}
-                            onClick={() => handleToggleCategory('transacoes')}
-                        >
-                            Transações
-                        </button>
-                        <button
-                            className={`category-button ${currentCategory === 'funcoes' ? 'selected' : ''}`}
-                            onClick={() => handleToggleCategory('funcoes')}
-                        >
-                            Funções
-                        </button>
-                    </div>
-                    <div id="search-container">
+                    <h2 id="search-title">Módulos</h2>
+                    <h2 className="menu-item" onClick={redirectToTransacoes}>Transações</h2>
+                    <h2 className="menu-item" onClick={redirectToFuncoes}>Funções</h2>
+                    <div id="search-container"> 
                         <FaSearch id="search-icon" />
-                        <input
-                            type="search"
-                            placeholder="Digite aqui..."
+                        <input 
+                            type="search" 
+                            placeholder="Digite aqui..." 
                             value={searchTerm}
                             onChange={handleSearch}
                         />
@@ -339,21 +245,21 @@ export default function ModulosAdminPage() {
                     <table>
                         <thead>
                             <tr>
-                                <th>TAG de Abreviação</th>
+                                <th>Nome do Módulo</th>
                                 <th>Descrição</th>
-                                <th>Ações</th> {/* Adicionando coluna para ações */}
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredItems().map((item) => (
-                                <tr key={item.id}>
-                                    <td>{getNameFieldByCategory(item)}</td>
-                                    <td>{item.descricao}</td>
+                            {filteredModulos.map((modulo) => (
+                                <tr key={modulo.id_modulo}>
+                                    <td>{modulo.nome_modulo}</td>
+                                    <td>{modulo.descricao}</td>
                                     <td>
-                                        <button className="action-button" onClick={() => handleEditElemento(item)}>
+                                        <button className="action-button" onClick={() => handleEditModulo(modulo)}>
                                             <FaEdit />
                                         </button>
-                                        <button className="action-button" onClick={() => handleDeleteElemento(item.id)}>
+                                        <button className="action-button" onClick={() => handleDeleteModulo(modulo.id_modulo)}>
                                             <FaTrash />
                                         </button>
                                     </td>
@@ -362,53 +268,56 @@ export default function ModulosAdminPage() {
                         </tbody>
                     </table>
                 </div>
-                    <div id="button-container">
-                        <button id="baixar-relatorio" onClick={onDownloadReportClick}>Baixar Relatório</button>
-                        <button id="criar-elemento" onClick={openModal}>Criar Novo Elemento</button>
-                    </div>
+                <div id="button-container">
+                    <button id="baixar-relatorio" onClick={handleDownloadReport}>Baixar Relatório</button>
+                    <button id="criar-modulo" onClick={handleOpenNewModuloModal}>Criar Novo Módulo</button>
+                </div>
             </div>
             <Footer />
 
             {isModalOpen && (
                 <div className="modal">
                     <div className="modal-content">
-                        <span className="close" onClick={closeModal}>&times;</span>
-                        <h2>{isEditing ? `Editar ${getModalTitleByCategory()}` : `Criar ${getModalTitleByCategory()}`}</h2>
-                        <form>
-                            <label>
-                                Nome:
-                                <input
-                                    type="text"
-                                    name="nome"
-                                    value={isEditing ? editElement.nome : newElemento.nome}
-                                    onChange={handleInputChange}
-                                />
-                            </label>
-                            <label>
-                                Descrição:
-                                <textarea
-                                    id="descricao"
-                                    name="descricao"
-                                    value={isEditing ? editElement.descricao : newElemento.descricao}
-                                    onChange={handleInputChange}
-                                />
-                            </label>
-                            {currentCategory !== 'modulos' && (
-                                <Select
-                                    id="modulos"
-                                    name="modulos"
-                                    isMulti
-                                    value={newElemento.modulos} // Valor selecionado
-                                    onChange={(selectedOptions) => handleInputChange({ target: { name: 'modulos', value: selectedOptions.map(option => option.value) } })}
-                                    options={modulos.map(modulo => ({ value: modulo.id_modulo, label: modulo.nome_modulo }))}
-                                />
-                            )}
-                            <div className="modal-footer">
-                                <button type="button" onClick={isEditing ? handleUpdateElemento : handleCreateElemento}>
-                                    {isEditing ? 'Salvar Alterações' : 'Salvar'}
-                                </button>
-                            </div>
-                        </form>
+                        <span className="close" onClick={() => { setIsModalOpen(false); setIsEditing(false); }}>&times;</span>
+                        <h2>{isEditing ? 'Editar Módulo' : 'Criar Módulo'}</h2>
+                        <div className="modal-body">
+                            <label htmlFor="nome_modulo">Nome do Módulo:</label>
+                            <input
+                                type="text"
+                                id="nome_modulo"
+                                name="nome_modulo"
+                                value={newModulo.nome_modulo}
+                                onChange={handleInputChange}
+                            />
+                            <label htmlFor="descricao">Descrição:</label>
+                            <textarea
+                                id="descricao"
+                                name="descricao"
+                                value={newModulo.descricao}
+                                onChange={handleInputChange}
+                            />
+                            <label htmlFor="transacoes">Transações:</label>
+                            <Select
+                                id="transacoes"
+                                name="transacoes"
+                                isMulti
+                                value={selectedTransacoes}
+                                onChange={handleChangeSelectTransacoes}
+                                options={optionsTransacoes}
+                            />
+                            <label htmlFor="funcoes">Funções:</label>
+                            <Select
+                                id="funcoes"
+                                name="funcoes"
+                                isMulti
+                                value={selectedFuncoes}
+                                onChange={handleChangeSelectFuncoes}
+                                options={optionsFuncoes}
+                            />
+                        </div>
+                        <div className="modal-footer">
+                            <button onClick={handleCreateOrEditModulo}>{isEditing ? 'Salvar Alterações' : 'Criar Módulo'}</button>
+                        </div>
                     </div>
                 </div>
             )}

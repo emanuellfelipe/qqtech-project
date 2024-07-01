@@ -5,7 +5,7 @@ import "/src/styles/footer.css"; // Certifique-se de que o caminho esteja corret
 export default function Footer() {
     return (
         <footer>
-            <p>Lojas Quero Quero @ 2024. Todos os Direitos Reservados</p>
+            <p>Lojas Quero Quero @ 2024</p>
             <div id="social-icons">
                 <Image src="/images/facebook-icon.png" alt="Facebook" width={20} height={20} />
                 <Image src="/images/instagram-icon.png" alt="Instagram" width={20} height={20} />

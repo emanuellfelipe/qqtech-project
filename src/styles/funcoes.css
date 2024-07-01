@@ -29,6 +29,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow-y: auto;
 }
 
 #main-content h1 {
@@ -38,25 +39,43 @@ body {
     border: none;
 }
 
-/* Alinhando o search-wrapper no canto direito e o search-title no canto esquerdo */
 #search-wrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
     align-items: center;
     margin-bottom: 5px;
-    position: relative; /* Permite posicionar o ícone de pesquisa */
+    position: relative;
+}
+
+.menu-item {
+    cursor: pointer;
+    color: rgb(0, 0, 0);
+    text-decoration: none; /* Garante que inicialmente não há sublinhado */
+    width: auto;
+    font-size: 16px;
+    padding-top: 12px;
+    margin-right:20px;
+
+    /* Transição suave para o sublinhado */
+    transition: text-decoration 0.3s ease;
+}
+
+.menu-item:hover {
+    text-decoration: underline; /* Aplica o sublinhado quando há hover */
 }
 
 #search-title {
-    color: #01ab45;
-    border-bottom: 2px solid #01ab45;
-    width: auto; /* Define a largura automática para o título */
+    color: #01AB45;
+    border-bottom: 2px solid #01AB45;
+    width: auto;
     font-size: 16px;
-    padding-top: 16px;
+    padding-top: 12px;
+    margin-right:20px; 
 }
 
 #search-container {
-    position: relative;
+    position: absolute;
+    right: 0; /* Alinha o campo de busca à direita */
 }
 
 #search-icon {
@@ -121,7 +140,7 @@ body {
     flex: 1;
 }
 
-#criar-perfil {
+#criar-funcao {
     padding: 10px 5px;
     background-color: #01ab45;
     color: white;
@@ -135,7 +154,7 @@ body {
     float: left; /* Alinha os botões lado a lado */
 }
 
-#criar-perfil:hover {
+#criar-funcoes:hover {
     background-color: #019639;
 }
 #baixar-relatorio {

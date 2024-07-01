@@ -37,7 +37,7 @@ const ModuloTransacao = sequelize.define('ModuloTransacao', {
 });
 
 // Função para associar módulos a uma transação
-ModuloTransacao.associateModules = async function (id_transacao, modulos) {
+ModuloTransacao.associateTransactions = async function (id_transacao, modulos) {
   try {
     // Remover todos os módulos associados à transação
     await ModuloTransacao.destroy({ where: { id_transacao } });

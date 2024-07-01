@@ -77,7 +77,7 @@ async function getPerfis(req, res) {
   try {
     const perfis = await Perfil.findAll({
       include: {
-        model: Modulo,
+        model: Modulos,
         through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
       }
     });

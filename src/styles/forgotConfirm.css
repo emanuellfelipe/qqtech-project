@@ -1,74 +1,58 @@
+/* src/styles/forgotConfirm.css */
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-* {
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body, html {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Roboto', sans-serif;
     background-color: #B2FDBA;
+    font-family: 'Roboto', sans-serif;
 }
 
-.page-content {
-    width: 540px;
-    min-height: 260px; 
-    border-radius: 16px;
-    background-color: #fff;
-    border: 2px solid #01ab45;
+.redefinir-senha {
+    width: 100%;
+    position: relative;
+    background-color: #b2fdba;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px; 
-    gap: 24px;
-    text-align: center; 
+    text-align: center;
+    font-size: 24px;
+    color: #21272a;
 }
 
-.secondary-headline {
-    font-size: 24px; 
-    font-weight: 700; 
-    color: #21272a;
+.page-content {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 16px;
+    background-color: #fff;
+    border: 2px solid #01ab45;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    gap: 24px;
+}
+
+.section-text {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
 }
 
 .paragraph {
     font-size: 18px;
-    line-height: 140%;
-    color: #21272a; 
-    padding-top: 10px;
-    width: 400px;
-}
-
-.button {
-    border: none; 
-    border-radius: 12px;
-    background-color: #01ab45;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px 64px; 
-    cursor: pointer;
-    font-size: 16px;
-    color: #fff;
-    transition: background-color 0.3s ease;
-    width: 400px;
-    font-weight: 550;
-    margin-top: 24px; /* Aumenta o espaçamento entre o botão e o último field */
-}
-
-.button:hover {
-    background-color: #019639;
-}
-
-.label {
-    font-weight: bold; /* Coloca os labels em negrito */
     
+    color: #21272a;
+    width: 100%; /* Ajusta a largura para ocupar todo o espaço disponível */
 }
 
 .label-and-field {
@@ -77,44 +61,88 @@ body, html {
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: 12px; /* Aumenta o espaçamento entre os campos */
+    gap: 8px;
     width: 100%;
+    font-weight: bold;
+    
 }
 
 .field {
+    align-self: stretch;
     background-color: #f2f4f8;
-    border: 1px solid transparent; /* Remove a borda preta nos inputs */
-    border-bottom: 1px solid #c1c7cd;
+    border: none;
+    border-bottom: 2px solid #c1c7cd;
     box-sizing: border-box;
-    height: 40px; /* Diminui a altura dos inputs */
+    height: 48px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 12px;
+    font-size: 16px;
+    color: #000000;
+    margin-top: 8px;
+    transition: border-color 0.3s ease;
+}
+
+.field:focus {
+    outline: none;
+    border: 2px solid #01ab45;
+    border-radius: 4px; 
+}
+
+.button {
+    align-self: stretch;
+    border-radius: 16px;
+    background-color: #01ab45;
+    border: none;
+    box-sizing: border-box;
+    height: 48px;
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
+    padding: 16px 20px;
+    font-size: 16px;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    background-color: #018a35;
+}
+
+.form-2-fields-checkbox-b {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: flex-start;
-    padding: 0 16px;
-    font-size: 16px;
-    color: #697077;
-    width: 100%;
+    padding: 24px 0px 0px;
+    gap: 16px;
+    text-align: left;
+    font-size: 14px;
 }
 
-.field:focus-within {
-    border: 2px solid #01AB45;
-    border-radius: 4px;
-    outline: none;
-}
+@media (max-width: 576px) {
+    .redefinir-senha {
+        font-size: 18px;
+    }
 
-input[type="email"] {
-    height: 100%;
-    width: 100%;
-    background-color: transparent;
-    border: none;
-    font-size: 16px;
-    color: #000000;
-}
+    .page-content {
+        padding: 20px;
+        width: 95%;
+    }
 
-input[type="email"]:focus {
-    border-color: #01AB45;
-    border-radius: 4px;
-    border-width: 2px;
-    outline: none;
+    .field {
+        height: 40px;
+        padding: 0 12px;
+        font-size: 14px;
+    }
+
+    .button {
+        height: 40px;
+        font-size: 14px;
+    }
 }

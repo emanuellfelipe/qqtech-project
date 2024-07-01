@@ -112,6 +112,11 @@ export default function PerfisAdminPage() {
         setIsModalOpen(true);
     };
 
+    const handleChangeSelect = (selectedOptions) => {
+        setSelectedModulos(selectedOptions);
+        setNewPerfil({ ...newPerfil, modulos: selectedOptions.map(option => option.value) });
+    };
+
     const handleDeletePerfil = async (id_perfil) => {
         if (confirm('Tem certeza de que deseja excluir este perfil?')) {
             try {
@@ -124,11 +129,6 @@ export default function PerfisAdminPage() {
                 alert('Erro ao excluir perfil. Tente novamente.');
             }
         }
-    };
-
-    const handleChangeSelect = (selectedOptions) => {
-        setSelectedModulos(selectedOptions);
-        setNewPerfil({ ...newPerfil, modulos: selectedOptions.map(option => option.value) });
     };
 
     const handleDownloadReport = async () => {
@@ -153,7 +153,6 @@ export default function PerfisAdminPage() {
     }
 };
 
-    
 
     const filteredPerfis = perfis.filter(perfil =>
         perfil &&
@@ -203,31 +202,33 @@ export default function PerfisAdminPage() {
                         />
                     </div>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome do Perfil</th>
-                            <th>Descrição</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredPerfis.map((perfil) => (
-                            <tr key={perfil.id_perfil}>
-                                <td>{perfil.nome_perfil}</td>
-                                <td>{perfil.descricao}</td>
-                                <td>
-                                    <button className="action-button" onClick={() => handleEditPerfil(perfil)}>
-                                        <FaEdit />
-                                    </button>
-                                    <button className="action-button" onClick={() => handleDeletePerfil(perfil.id_perfil)}>
-                                        <FaTrash />
-                                    </button>
-                                </td>
+                <div id="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome do Perfil</th>
+                                <th>Descrição</th>
+                                <th>Ações</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {filteredPerfis.map((perfil) => (
+                                <tr key={perfil.id_perfil}>
+                                    <td>{perfil.nome_perfil}</td>
+                                    <td>{perfil.descricao}</td>
+                                    <td>
+                                        <button className="action-button" onClick={() => handleEditPerfil(perfil)}>
+                                            <FaEdit />
+                                        </button>
+                                        <button className="action-button" onClick={() => handleDeletePerfil(perfil.id_perfil)}>
+                                            <FaTrash />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 <div id="button-container">
                     <button id="baixar-relatorio" onClick={handleDownloadReport}>Baixar Relatório</button>
                     <button id="criar-perfil" onClick={handleOpenNewPerfilModal}>Criar Novo Perfil</button>

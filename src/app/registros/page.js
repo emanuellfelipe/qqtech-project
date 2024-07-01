@@ -215,6 +215,7 @@ export default function UserAdminPage() {
                 <div id="button-container">
                     <button id="baixar-relatorio" onClick={handleDownloadReport}>Baixar Relatório</button>
                     <button id="criar-usuario" onClick={() => window.location.href = '/novoRegistro'}>Criar Novo Usuário</button>
+
                 </div>
             </div>
             <Footer />
