@@ -9,16 +9,6 @@ const PerfilUsuario = sequelize.define('PerfilUsuario', {
     autoIncrement: true,
     primaryKey: true,
   },
-  id_perfil: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Perfil,
-      key: 'id_perfil',
-      onDelete: 'CASCADE', // Define ação de deleção em cascata
-      onUpdate: 'CASCADE' // Define ação de atualização em cascata, se necessário
-    },
-  },
   id_usuario: { // Alterado de id_modulo para id_usuario
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -29,25 +19,30 @@ const PerfilUsuario = sequelize.define('PerfilUsuario', {
       onUpdate: 'CASCADE' // Define ação de atualização em cascata, se necessário
     },
   },
+  id_perfil: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Perfil,
+      key: 'id_perfil',
+      onDelete: 'CASCADE', // Define ação de deleção em cascata
+      onUpdate: 'CASCADE' // Define ação de atualização em cascata, se necessário
+    },
+  },
 }, {
   tableName: 'perfil_usuario',
   timestamps: false,
 });
 
-// Função para associar um único perfil a um usuário
-PerfilUsuario.associateUsers = async function (id_perfil, id_usuario) {
+PerfilUsuario.associateSingleUser = async function (id_usuario, id_perfil) {
   try {
-    // Verificar se o usuário já possui um perfil associado
-    const existingAssoc = await PerfilUsuario.findOne({ where: { id_usuario } });
-    if (existingAssoc) {
-      // Atualizar o perfil existente
-      await existingAssoc.update({ id_perfil });
-    } else {
-      // Criar uma nova associação de perfil para o usuário
-      await PerfilUsuario.create({ id_perfil, id_usuario });
-    }
+    // Remover o perfil atualmente associado ao usuário, se houver
+    await PerfilUsuario.destroy({ where: { id_usuario } });
+
+    // Associar o novo perfil ao usuário
+    await PerfilUsuario.create({ id_usuario, id_perfil });
   } catch (error) {
-    console.error('Erro ao associar usuário ao perfil:', error);
+    console.error('Erro ao associar o perfil ao usuário:', error);
     throw error;
   }
 };

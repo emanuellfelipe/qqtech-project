@@ -38,7 +38,7 @@ export default function ModulosAdminPage() {
                 setIsLoading(false);
             }
         };
-
+        
         const fetchTransacoes = async () => {
             try {
                 const response = await fetch('/api/transacoes');
@@ -64,7 +64,7 @@ export default function ModulosAdminPage() {
                 console.error('Erro ao buscar funções:', error);
             }
         };
-
+        
         fetchModulos();
         fetchTransacoes();
         fetchFuncoes();
@@ -81,7 +81,7 @@ export default function ModulosAdminPage() {
       const redirectToFuncoes = () => {
         window.location.href = '/funcoes';
       };
-
+   
     const handleCreateOrEditModulo = async () => {
         const url = isEditing ? `/api/modulos?id_modulo=${editingModuloId}` : '/api/modulos';
         const method = isEditing ? 'PUT' : 'POST';
@@ -165,7 +165,7 @@ export default function ModulosAdminPage() {
 
     const handleDownloadReport = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/download/modulo`);
+            const response = await fetch(`http://localhost:5000/download/modulos`);
             if (!response.ok) {
                 throw new Error('Erro ao baixar o relatório');
             }
@@ -174,7 +174,7 @@ export default function ModulosAdminPage() {
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = 'modulo.xlsx';
+            a.download = 'Modulo.xlsx';
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -231,6 +231,14 @@ export default function ModulosAdminPage() {
                     <h2 id="search-title">Módulos</h2>
                     <h2 className="menu-item" onClick={redirectToTransacoes}>Transações</h2>
                     <h2 className="menu-item" onClick={redirectToFuncoes}>Funções</h2>
+                    <div className="mobile-dropdown">
+                        <input type="checkbox" id="dropdownCheckbox" className="dropdown-checkbox" />
+                        <label htmlFor="dropdownCheckbox" className="dropdown-toggle">Mais +</label>
+                        <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li onClick={redirectToTransacoes}>Transações</li>
+                            <li onClick={redirectToFuncoes}>Funções</li>
+                        </ul>
+                    </div>
                     <div id="search-container"> 
                         <FaSearch id="search-icon" />
                         <input 
@@ -296,24 +304,7 @@ export default function ModulosAdminPage() {
                                 value={newModulo.descricao}
                                 onChange={handleInputChange}
                             />
-                            <label htmlFor="transacoes">Transações:</label>
-                            <Select
-                                id="transacoes"
-                                name="transacoes"
-                                isMulti
-                                value={selectedTransacoes}
-                                onChange={handleChangeSelectTransacoes}
-                                options={optionsTransacoes}
-                            />
-                            <label htmlFor="funcoes">Funções:</label>
-                            <Select
-                                id="funcoes"
-                                name="funcoes"
-                                isMulti
-                                value={selectedFuncoes}
-                                onChange={handleChangeSelectFuncoes}
-                                options={optionsFuncoes}
-                            />
+
                         </div>
                         <div className="modal-footer">
                             <button onClick={handleCreateOrEditModulo}>{isEditing ? 'Salvar Alterações' : 'Criar Módulo'}</button>

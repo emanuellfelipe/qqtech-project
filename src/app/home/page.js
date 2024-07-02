@@ -1,4 +1,5 @@
 "use client";
+import { FiLogOut } from 'react-icons/fi';
 import Image from 'next/image';
 import "/src/styles/homeAdmin.css";
 
@@ -7,6 +8,9 @@ export default function HomeAdminPage() {
   const redirectToPage = (page) => {
     window.location.href = page;
   };
+  const handleLogout = () => {
+    window.location.href = '/login';
+};
 
   return (
     <>
@@ -23,7 +27,7 @@ export default function HomeAdminPage() {
         </nav>
         <div id="icons">
           <Image className="icon-profile" src="/images/menu-icon.png" alt="Menu Icon" width={32} height={32} />
-          <Image className="icon-settings" src="/images/settings-icon.png" alt="Settings Icon" width={24} height={24} />
+          <FiLogOut className="menu-icon" size={18} onClick={handleLogout} />
         </div>
       </header>
 

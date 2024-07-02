@@ -1,23 +1,19 @@
-const { sequelize, Usuario, PerfilUsuario, Perfil } = require('../../models/associations');
-
+// src/pages/api/usuarios.js
+const { Usuario, Perfil, PerfilUsuario } = require('../../models/associations');
 
 export default async function handler(req, res) {
   switch (req.method) {
     case 'GET':
-      if (req.query.id_usuario) {
-        await getUser(req, res);
-      } else {
-        await getUsers(req, res);
-      }
+      await getUsuarios(req, res);
       break;
     case 'POST':
-      await createUser(req, res);
+      await createUsuario(req, res);
       break;
     case 'PUT':
-      await updateUser(req, res);
+      await updateUsuario(req, res);
       break;
     case 'DELETE':
-      await deleteUser(req, res);
+      await deleteUsuario(req, res);
       break;
     default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
@@ -25,128 +21,62 @@ export default async function handler(req, res) {
   }
 }
 
-async function getUsers(req, res) {
+async function getUsuarios(req, res) {
   try {
     const usuarios = await Usuario.findAll({
-      attributes: ['id_usuario', 'matricula', 'nome_usuario', 'email', 'nome_completo']
-    });
-    res.status(200).json(usuarios);
-  } catch (error) {
-    console.error('Erro ao buscar usuários:', error);
-    res.status(500).json({ error: 'Erro ao buscar usuários' });
-  }
-}
-
-async function getUser(req, res) {
-  try {
-    const { id_usuario } = req.query;
-    const usuario = await Usuario.findByPk(id_usuario, {
-      include: [{
-        model: Perfil,
-        through: {
-          attributes: [] // Evita trazer colunas extras da tabela de associação
-        }
-      }]
-    });
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
-    }
-    res.status(200).json(usuario);
-  } catch (error) {
-    console.error('Erro ao buscar usuário:', error);
-    res.status(500).json({ error: 'Erro ao buscar usuário' });
-  }
-}
-
-async function createUser(req, res) {
-  try {
-    const { matricula, nome_completo, nome_usuario, email, senha, perfil } = req.body;
-    const newUser = await Usuario.create({ matricula, nome_completo, nome_usuario, email, senha });
-
-    if (perfil && perfil.length > 0) {
-      await PerfilUsuario.associateUsers(newUser.id_usuario, perfil);
-    }
-
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.error('Erro ao criar usuário:', error);
-    res.status(500).json({ error: 'Erro ao criar usuário' });
-  }
-}
-async function getPerfis(req, res) {
-  try {
-    const perfis = await Perfil.findAll({
       include: {
-        model: Modulos,
+        model: Perfil,
         through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
       }
     });
-    res.status(200).json({ success: true, data: perfis });
+    res.status(200).json({ success: true, data: usuarios });
   } catch (error) {
-    console.error('Erro ao buscar perfis:', error);
-    res.status(500).json({ success: false, message: 'Erro ao buscar perfis' });
+    console.error('Erro ao buscar usuários:', error);
+    res.status(500).json({ success: false, message: 'Erro ao buscar usuários' });
   }
 }
 
-// Back dos Usuários (updateUser)
-async function updateUser(req, res) {
+async function createUsuario(req, res) {
   try {
-      const { id_usuario } = req.query;
-      const { matricula, nome_completo, nome_usuario, email, senha, id_perfil } = req.body;
+    const { nome_usuario, email, id_perfil } = req.body;
+    const usuario = await Usuario.create({ nome_usuario, email });
 
-      const usuario = await Usuario.findByPk(id_usuario);
-      if (!usuario) {
-          return res.status(404).json({ error: 'Usuário não encontrado' });
-      }
+    if (id_perfil) {
+      await PerfilUsuario.associateSingleUser(usuario.id_usuario, id_perfil);
+    }
 
-      const transaction = await sequelize.transaction();
-
-      try {
-          // Atualiza os dados do usuário
-          usuario.matricula = matricula;
-          usuario.nome_completo = nome_completo;
-          usuario.nome_usuario = nome_usuario;
-          usuario.email = email;
-
-          // Atualiza a senha apenas se fornecida
-          if (senha) {
-              usuario.senha = senha;
-          }
-
-          await usuario.save({ transaction });
-
-          // Verifica se foi fornecido o id_perfil
-          if (id_perfil !== undefined && id_perfil !== null) {
-              // Verifica e atualiza o perfil do usuário
-              let perfilUsuario = await PerfilUsuario.findOne({
-                  where: { id_usuario }
-              });
-
-              if (perfilUsuario) {
-                  // Se já existir uma associação, atualiza o perfil
-                  perfilUsuario.id_perfil = id_perfil;
-                  await perfilUsuario.save({ transaction });
-              } else {
-                  // Caso não exista, cria uma nova associação
-                  perfilUsuario = await PerfilUsuario.create({ id_usuario, id_perfil }, { transaction });
-              }
-          }
-
-          await transaction.commit();
-          res.status(200).json({ ...usuario.toJSON(), id_perfil });
-      } catch (error) {
-          await transaction.rollback();
-          console.error('Erro ao atualizar usuário:', error);
-          res.status(500).json({ error: 'Erro ao atualizar usuário' });
-      }
+    res.status(201).json({ success: true, data: usuario, message: 'Usuário criado com sucesso' });
   } catch (error) {
-      console.error('Erro ao iniciar transação:', error);
-      res.status(500).json({ error: 'Erro ao atualizar usuário' });
+    console.error('Erro ao criar usuário:', error);
+    res.status(500).json({ success: false, message: 'Erro ao criar usuário' });
   }
 }
 
+async function updateUsuario(req, res) {
+  try {
+    const { id_usuario } = req.query;
+    const { nome_usuario, email, id_perfil } = req.body;
 
-async function deleteUser(req, res) {
+    const usuario = await Usuario.findByPk(id_usuario);
+    if (!usuario) {
+      return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
+    }
+
+    await usuario.update({ nome_usuario, email });
+
+    // Atualizar o perfil associado ao usuário
+    if (id_perfil) {
+      await PerfilUsuario.associateSingleUser(usuario.id_usuario, id_perfil);
+    }
+
+    res.status(200).json({ success: true, data: usuario, message: 'Usuário atualizado com sucesso' });
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar usuário' });
+  }
+}
+
+async function deleteUsuario(req, res) {
   try {
     const { id_usuario } = req.query;
 
@@ -154,11 +84,7 @@ async function deleteUser(req, res) {
       return res.status(400).json({ error: 'id_usuario é obrigatório' });
     }
 
-    if (isNaN(Number(id_usuario))) {
-      return res.status(400).json({ error: 'id_usuario deve ser um número' });
-    }
-
-    // Antes de deletar o usuário, deletamos os registros associados na tabela perfil_usuario
+    // Antes de deletar o usuário, deletar os registros associados na tabela perfil_usuario
     await PerfilUsuario.destroy({ where: { id_usuario } });
 
     // Agora podemos deletar o usuário da tabela usuario

@@ -1,52 +1,50 @@
 /* Reset básico e fontes */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body, html {
     margin: 0;
     padding: 0;
 }
+
 body {
     display: flex;
-    justify-content: space-between;
-    width: 1440px;
-    height: 1024px;
+    flex-direction: column;
+    min-height: 100vh; /* Altura mínima da tela */
     background-color: #B2FDBA;
     font-family: 'Roboto', sans-serif;
 }
+
+/* Estilo para o cabeçalho principal */
 #main-content {
-    margin-left: 400px;
-    margin-bottom: 60px;
-    margin-top: 64px;
-    padding-left: 60px;
-    padding-right: 60px;
-    padding-top: 26px;
-    padding-bottom: 30px;
+    margin-top: 40px; /* Distância do topo */
+    margin-left: 380px; /* Distância do sidebar */
+    margin-right: 20px; /* Margem geral */
+    padding: 20px; /* Padding geral */
     background-color: #FFFFFF;
     border: 2px solid #01AB45;
     border-radius: 16px;
-    width: calc(70% - 260px - 60px);
-    height: 50%;
-    display: flex;
+    flex: 1; /* Para ocupar todo o espaço restante */
+    max-height: calc(100vh - 150px); /* Altura máxima para evitar o footer */
+    width: 60%; /* Largura máxima */
     flex-direction: column;
     justify-content: space-between;
-    
-    
+    height: 60%;
+    display: flex;
 }
+
 
 #main-content h1 {
     color: #21272A;
     text-align: center;
-    font-size: 36px; /* Tamanho do título aumentado */
-    border: none;
+    font-size: 36px;
+    margin-bottom: 20px; /* Margem inferior para separar do conteúdo */
 }
-
-#search-wrapper {
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    margin-bottom: 5px;
-    position: relative;
-}
-
 .menu-item {
     cursor: pointer;
     color: rgb(0, 0, 0);
@@ -55,62 +53,69 @@ body {
     font-size: 16px;
     padding-top: 12px;
     margin-right:20px;
-
-    /* Transição suave para o sublinhado */
     transition: text-decoration 0.3s ease;
-}
+    margin-bottom: 16px;
+}   
 
 .menu-item:hover {
     text-decoration: underline; /* Aplica o sublinhado quando há hover */
 }
+/* Estilo para a seção de busca */
+#search-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 5px;   
+    position: relative;
+}
 
 #search-title {
-    color: #01AB45;
-    border-bottom: 2px solid #01AB45;
-    width: auto;
+    color: #01ab45;
     font-size: 16px;
-    padding-top: 12px;
-    margin-right:20px; 
+    border-bottom: 2px solid #01ab45;
+    padding-bottom: 5px; /* Espaçamento inferior */
+    margin-right:20px;
 }
 
 #search-container {
     position: absolute;
     right: 0; /* Alinha o campo de busca à direita */
+    margin-bottom: 8px;
 }
+
 
 #search-icon {
     position: absolute;
     right: 10px;
+    top: 50%; /* Centraliza verticalmente */
+    transform: translateY(-50%);
     color: #ccc;
-    width: 18px;
-    height: 18px;
-    padding-top: 8px;
+    cursor: pointer;
 }
 
 #main-content input[type="search"] {
-    padding: 10px 30px 10px 10px;
+    width: 100%;
+    padding: 10px;
     border: none;
     border-bottom: 2px solid #ccc;
-    border-radius: 0;
-    width: auto;
     outline: none;
 }
+
 #table-container {
-    overflow-x: auto; /* Adiciona rolagem horizontal se necessário */
+    overflow-y: auto; /* Adiciona rolagem horizontal se necessário */
 }
+
 #main-content table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
-    overflow-y: auto; /* Adiciona uma barra de rolagem vertical se necessário */
-    max-height: 500px;
+    margin-bottom: 40px;
 }
 
-#main-content th, #main-content td {
+#main-content th,
+#main-content td {
     text-align: left;
     padding: 10px;
     border-bottom: 1px solid #ccc;
-    white-space: nowrap; /* Evita a quebra de texto */
 }
 
 #main-content th {
@@ -118,43 +123,52 @@ body {
     height: 30px;
     font-size: 14px;
 }
+
+/* Estilo para botões de ação */
+.action-button {
+    background: none;
+    border: none;
+    color: #01AB45;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.action-button:hover {
+    color: #960101;
+}
+
+/* Estilo para o container de botões */
 #button-container {
     display: flex;
-    justify-content: center;
-    gap: 5px;
+    justify-content: space-between;
+    margin-top: 20px; /* Margem superior entre os botões */
 }
 
 #button-container button {
-    flex: 1;
+    width: 48%; /* Largura dos botões */
+    padding: 10px;
 }
+
+/* Estilo específico para o botão 'Criar Perfil' */
 #criar-modulo {
-    padding: 10px 5px;
     background-color: #01ab45;
     color: white;
-    border: none;
     border-radius: 12px;
-    cursor: pointer;
-    width: 40%;
-    align-self: center;
-    margin-top: auto;
-    margin-right: 0; /* Remove a margem à direita do botão */
-    float: left; /* Alinha os botões lado a lado */
+    border: none;
 }
 
 #criar-modulo:hover {
     background-color: #019639;
 }
+
+/* Estilo específico para o botão 'Baixar Relatório' */
 #baixar-relatorio {
-    border-radius: 12px;
-    cursor: pointer;
-    width: 40%;
-    align-self: center;
-    margin-top: auto;
-    margin-right: 0;
-    padding: 10px 5px;
     background-color: #ffffff;
     color: #01ab45;
     border: 1px solid #01ab45;
+    border-radius: 12px;
+    cursor: pointer;
 }
 
 #baixar-relatorio:hover {
@@ -163,19 +177,7 @@ body {
     border-color: #019639;
 }
 
-.action-button {
-    background: none;
-    border: none;
-    color: #01AB45;
-    cursor: pointer;
-    padding: 5px;
-    font-size: 16px;
-}
-
-.action-button:hover {
-    color: #960101;
-}
-
+/* Estilo para o modal */
 .modal {
     display: flex;
     justify-content: center;
@@ -235,8 +237,11 @@ body {
 }
 
 .modal-content input[type="text"]:focus {
-    border-bottom: 1px solid #01ab45; /* Borda verde com 1px de espessura */
+    border: 2px solid #01ab45;
+    outline: none;
+    border-radius: 8px;
 }
+
 .modal-content textarea#descricao {
     min-width: 95%;
     min-height: 150px;
@@ -253,6 +258,19 @@ body {
 .modal-content textarea#descricao:focus {
     border-color: #01ab45;
     outline: none;
+}
+.modal-footer button {
+    padding: 12px 24px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+.modal-footer button:hover {
+    background-color: #388e3c;
 }
 
 .select-container {
@@ -286,60 +304,91 @@ body {
 .select-container .select__multi-value__remove:hover {
     background-color: #017135;
 }
-
-/* Estilos para inputs e selects dentro do modal */
-.modal-content input[type="text"],
-.modal-content input[type="number"],
-.modal-content input[type="password"],
-.modal-content textarea,
-.modal-content .form-input {
-    height: 32px;
-    background-color: #f2f4f8;
-    border: 1px solid transparent;
-    border-bottom: 1px solid #c1c7cd;
-    font-size: 14px;
-    padding-left: 10px;
-    transition: border-color 0.3s ease;
+.mobile-dropdown {
+    display: none;
+    /* outros estilos específicos para mobile */
 }
 
-.modal-content input[type="text"]:focus,
-.modal-content input[type="number"]:focus,
-.modal-content input[type="password"]:focus,
-.modal-content textarea:focus,
-.modal-content .form-input:focus {
-    border-color: #01ab45;
-    border-radius: 4px;
-    border-width: 2px;
-    outline: none;
+/* Ajustes para dispositivos móveis */
+@media screen and (max-width: 576px) {
+    body {
+        overflow-x: hidden; /* Evita rolagem horizontal */
+    }
+
+    #main-content {
+        margin-top: 60px;
+        margin-left: 20px;
+        padding: 10px;/* Padding menor */
+        justify-content: center;
+        width: 90%;
+        
+    }
+    
+    .menu-item {
+        display: none;
+    }
+    
+    .modal-content {
+        width: 90%; /* Ajusta largura do modal */
+        max-width: 90%; /* Máximo de largura do modal */
+    }
+
+    #button-container {
+        flex-direction: column; /* Alinha botões verticalmente */
+    }
+
+    #button-container button {
+        width: 100%; /* Botões ocupam a largura total */
+        margin-bottom: 10px; /* Margem inferior entre botões */
+    }
+/* Estilo para o checkbox, escondido visualmente mas ainda acessível */
+.dropdown-checkbox {
+    display: none;
 }
 
-.modal-content select,
-.modal-content .form-select {
-    width: 100%;
-    min-height: 38px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    outline: none;
-    transition: border-color 0.3s ease;
+/* Estilo para o dropdown */
+.mobile-dropdown {
+    position: relative;
+    display: inline-block;
 }
 
-.modal-content select:focus,
-.modal-content .form-select:focus {
-    border-color: #01ab45;
-    border-radius: 8px;
-    outline: none;
-}
-.modal-footer button {
-    padding: 12px 24px;
-    background-color: #4CAF50; /* Verde */
-    color: white;
+/* Estilo para o botão de toggle do dropdown */
+.dropdown-toggle {
+    background-color: transparent;
     border: none;
-    border-radius: 12px;
     cursor: pointer;
-    width: 100%; /* Largura total */
-    margin-top: 20px; /* Distância entre o botão e o último campo */
+    color: #000000;
+    font-size: 16px;
+    padding: 5px;
+    font-weight: bold;
 }
 
-.modal-footer button:hover {
-    background-color: #388E3C; /* Verde mais escuro ao passar o mouse */
+/* Estilo para a lista de opções do dropdown */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 800;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Estilo para cada opção do dropdown */
+.dropdown-menu li {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    color: #01ab45;
+    cursor: pointer;
+}
+
+/* Mostrar o dropdown menu quando o checkbox está marcado */
+.dropdown-checkbox:checked + .dropdown-toggle + .dropdown-menu {
+    display: block;
+}
+
+
 }

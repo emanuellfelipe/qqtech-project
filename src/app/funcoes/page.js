@@ -201,6 +201,14 @@ export default function FuncoesAdminPage() {
                     <h2 className="menu-item" onClick={redirectToModulos}>Módulos</h2>
                     <h2 className="menu-item" onClick={redirectToTransacoes}>Transacoes</h2>
                     <h2 id="search-title">Funções</h2>
+                    <div className="mobile-dropdown">
+                        <input type="checkbox" id="dropdownCheckbox" className="dropdown-checkbox" />
+                        <label htmlFor="dropdownCheckbox" className="dropdown-toggle">Mais +</label>
+                        <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li onClick={redirectToTransacoes}>Transações</li>
+                            <li onClick={redirectToModulos}>Módulos</li>
+                        </ul>
+                    </div>
                     <div id="search-container">
                         <FaSearch id="search-icon" />
                         <input

@@ -1,3 +1,4 @@
+
 #menu-lateral {
     position: fixed;
     width: 248px;
@@ -8,6 +9,23 @@
     flex-direction: column;
     align-items: center;
     margin: 0;
+    transition: transform 0.3s ease-in-out;
+    z-index: 900;
+}
+
+#menu-lateral.open {
+    transform: translateX(0);
+}
+
+.mobile-menu-button {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
 }
 
 .botao-menu {
@@ -75,4 +93,19 @@
 
 .botao-menu img {
     margin-right: 10px;
+}
+
+@media (max-width: 576px) {
+    #menu-lateral {
+        width: 250px; /* Largura menor para mobile */
+        transform: translateX(-100%);
+    }
+
+    #menu-lateral.open {
+        transform: translateX(0);
+    }
+
+    .mobile-menu-button {
+        display: block;
+    }
 }

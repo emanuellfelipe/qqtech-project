@@ -45,9 +45,9 @@ app.add_middleware(
 
 # Configuração do envio de email com credenciais
 conf = ConnectionConfig(
-    MAIL_USERNAME="qqtechrecovery@gmail.com",
-    MAIL_PASSWORD="k w s e z c i n f t p r g j f b",
-    MAIL_FROM="qqtechrecovery@gmail.com",
+    MAIL_USERNAME="revoverybeaba@gmail.com",
+    MAIL_PASSWORD="pwxi epul dued jdsi",
+    MAIL_FROM="revoverybeaba@gmail.com",
     MAIL_PORT=587,
     MAIL_SERVER="smtp.gmail.com",
     MAIL_STARTTLS=True,

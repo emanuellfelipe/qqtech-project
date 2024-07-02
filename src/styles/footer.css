@@ -28,3 +28,11 @@ footer {
 #social-icons img:hover {
     transform: scale(1.1); 
 }
+@media (max-width: 576px) {
+    footer {
+        left: 0;
+        width: 100%;
+        
+        padding: 0 30px; /* Reduce padding for mobile */
+    }
+}
