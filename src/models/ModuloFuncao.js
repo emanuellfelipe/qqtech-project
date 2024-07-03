@@ -37,10 +37,9 @@ const ModuloFuncao = sequelize.define('ModuloFuncao', {
 
 ModuloFuncao.associateModules = async function (id_funcao, modulos) {
   try {
-    // Remover todos os módulos associados à função
+
     await ModuloFuncao.destroy({ where: { id_funcao } });
 
-    // Associar os novos módulos à função
     const moduloFuncoes = modulos.map(id_modulo => ({ id_funcao, id_modulo }));
     await ModuloFuncao.bulkCreate(moduloFuncoes);
   } catch (error) {

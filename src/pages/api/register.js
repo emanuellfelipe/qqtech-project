@@ -1,4 +1,3 @@
-// api/register.js
 const { sequelize, Usuario, Perfil, PerfilUsuario } = require('../../models/associations');
 
 export default async function handler(req, res) {
@@ -16,7 +15,6 @@ export default async function handler(req, res) {
             const transaction = await sequelize.transaction();
 
             try {
-                // Criação do usuário
                 const newUser = await Usuario.create({
                     matricula,
                     nome_usuario,
@@ -27,8 +25,7 @@ export default async function handler(req, res) {
 
                 console.log('Usuário criado:', newUser);
 
-                // Associação do usuário ao perfil
-                const perfilId = parseInt(perfil, 10); // Certifique-se de usar base 10
+                const perfilId = parseInt(perfil, 10); 
                 await PerfilUsuario.create({
                     id_usuario: newUser.id_usuario,
                     id_perfil: perfilId

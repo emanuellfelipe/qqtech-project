@@ -19,6 +19,7 @@ header {
     align-items: center;
     position: relative;
 }
+
 .logo {
     margin-right: auto;
 }
@@ -26,11 +27,11 @@ header {
 .logo img {
     height: 40px;
 }
+
 nav {
-    position: absolute; 
+    position: absolute;
     left: 50%;
-    transform: translateX(-50%); 
-    
+    transform: translateX(-50%);
 }
 
 nav ul {
@@ -55,129 +56,86 @@ nav ul li a {
     font-weight: bold;
     font-size: 14px;
     cursor: pointer;
-    transition: transform 0.2s ease; 
+    transition: transform 0.2s ease;
 }
 
 .menu button:hover {
-    transform: scale(1.1); 
+    transform: scale(1.1);
 }
 
 #icons {
-    position: absolute; 
-    top: 50%; 
-    right: 20px; 
-    transform: translateY(-50%); 
-    display: flex; 
-    align-items: center; 
-    margin-right: 10px;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
 }
 
 .menu-icon {
-    transition: transform 0.2s(ease);
+    transition: transform 0.2s ease;
     margin-left: 5px;
 }
-.icon-profile {
-    height: 30px;
-    transition: transform 0.2s(ease);
 
-}
-.icon-profile:hover {
-    transform: scale(1.1);
-    
-}
 .menu-icon:hover {
     transform: scale(1.1);
-    
 }
-#icons img {
-    margin-left: 10px; 
-}
+
 main {
     text-align: center;
-    padding: 50px 20px;
+    padding: 50px 20px 100px;
     background-color: #B2FDBA;
 }
-.titulo-desc {
-    color: #025400;
-    font-weight: bold;
+.dashboard-container {
+    background-color: #ffffff;
+    border: 2px solid #01AB45; 
+    border-radius: 10px; 
+    margin-bottom: 40px; 
+    max-width: 600px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+    padding-top: 30px;
 }
 
-.titulo {
-    font-size: 24px;
-    color: #21272A;
-    margin-bottom: 40px;
-}
-
-.options {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.option {
-    background-color: white;
-    border-radius: 8px;
-    padding: 10px;
-    width: 200px;
-    text-align: center;
-    border: 1px solid #01AB45;
-}
-
-.option img {
-    height: 100px;
-    margin-bottom: 20px;
-}
-
-.option h2 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 10px;
-}
-.block {
+.chart-container {
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
     display: block;
 }
-.option p {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 20px;
-    padding: 10px;
-}
-
-.option button {
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    padding: 10px; 
-    background-color: #4CAF50;
+.download-buttons {
+    margin-top: 1.5rem;
+  }
+  
+  .download-buttons label {
+    margin-right: 1rem;
+    font-weight: bold;
+  }
+  
+  .download-buttons select {
+    padding: 0.5rem;
+    font-size: 16px;
+    margin-right: 1rem;
+  }
+  
+  .download-buttons button {
+    background-color: #28a745;
     color: white;
-    text-decoration: none;
     border: none;
-    border-radius: 8px;
-    transition: background-color 0.2s, transform 0.2s ease;
-    font-size: 14px; 
-    width: 120px;
-    height: 40px;
-    margin: 0 auto;
-}
-
-.option button .icon {
-    margin-left: 4px; 
-    height: 10px; 
-    display: inline-block; 
-    vertical-align: middle; 
-    margin-left: 20px;
-    margin-bottom: 2px;
-}
-
-.option button:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-}
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border: 2px solid; /* borda verde */
+    border-radius: 10px;
+  }
+  
+  .download-buttons button:hover {
+    background-color: #218838;
+  }
 footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 60px;   
+    height: 60px;
     background-color: #025400;
     color: #fff;
     display: flex;
@@ -189,20 +147,19 @@ footer {
 #social-icons {
     display: flex;
     align-items: center;
-    gap: 10px; 
+    gap: 10px;
 }
 
 #social-icons img {
-    width: 24px; 
+    width: 24px;
     height: 24px;
     object-fit: contain;
-    transition: transform 0.2s ease; 
+    transition: transform 0.2s ease;
 }
 
 #social-icons img:hover {
-    transform: scale(1.1); 
+    transform: scale(1.1);
 }
-
 @media (max-width: 576px) {
     .options {
         flex-direction: column;
@@ -212,7 +169,7 @@ footer {
 
     nav {
         position: relative;
-        margin-top: 20px; 
+        margin-top: 20px;
     }
 
     nav ul {

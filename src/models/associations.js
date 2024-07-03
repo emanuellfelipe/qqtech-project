@@ -1,4 +1,3 @@
-// src/models/associations.js
 
 const sequelize = require('../config/db');
 const Usuario = require('./Usuario');
@@ -11,7 +10,7 @@ const PerfilModulo = require('./PerfilModulo');
 const ModuloFuncao = require('./ModuloFuncao');
 const ModuloTransacao = require('./ModuloTransacao');
 
-// Definindo os relacionamentos
+
 Usuario.belongsToMany(Perfil, { through: PerfilUsuario, foreignKey: 'id_usuario' });
 Perfil.belongsToMany(Usuario, { through: PerfilUsuario, foreignKey: 'id_perfil' });
 
@@ -24,7 +23,9 @@ Funcao.belongsToMany(Modulo, { through: ModuloFuncao, foreignKey: 'id_funcao' })
 Modulo.belongsToMany(Transacao, { through: ModuloTransacao, foreignKey: 'id_modulo' });
 Transacao.belongsToMany(Modulo, { through: ModuloTransacao, foreignKey: 'id_transacao' });
 
-// Exportando os modelos e a instância do Sequelize
+PerfilUsuario.belongsTo(Perfil, { foreignKey: 'id_perfil' });
+PerfilUsuario.belongsTo(Usuario, { foreignKey: 'id_usuario' });
+
 module.exports = {
     sequelize,
     Usuario,

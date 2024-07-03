@@ -12,9 +12,10 @@ export default function UsuariosAdminPage() {
     const [usuarios, setUsuarios] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newUsuario, setNewUsuario] = useState({ matricula: '', nome_usuario: '', email: '', nome_completo: '', perfis: [] });
+    const [newUsuario, setNewUsuario] = useState({ matricula: '', nome_usuario: '', email: '', nome_completo: '', perfil: null });
     const [perfis, setPerfis] = useState([]);
-    const [selectedPerfis, setSelectedPerfis] = useState([]);
+    const [selectedPerfil, setSelectedPerfil] = useState(null);
+    const [usuariosComPerfil, setUsuariosComPerfil] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editingUsuarioId, setEditingUsuarioId] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +29,13 @@ export default function UsuariosAdminPage() {
                     throw new Error('Erro ao buscar usuários');
                 }
                 const data = await response.json();
-                setUsuarios(data.data || []);
+                const usuariosData = data.data || [];
+                const usuariosComPerfilData = await Promise.all(usuariosData.map(async (usuario) => {
+                    const nomePerfil = await fetchPerfilUsuario(usuario.id_usuario);
+                    return { ...usuario, nome_perfil: nomePerfil };
+                }));
+
+                setUsuariosComPerfil(usuariosComPerfilData);
                 setIsLoading(false);
             } catch (error) {
                 console.error('Erro ao buscar usuários:', error);
@@ -54,39 +61,53 @@ export default function UsuariosAdminPage() {
         fetchPerfis();
     }, []);
 
+    const fetchPerfilUsuario = async (idUsuario) => {
+        try {
+            const response = await fetch(`/api/perfilUsuario?id_usuario=${idUsuario}`);
+            if (!response.ok) {
+                throw new Error('Erro ao buscar perfil do usuário');
+            }
+            const data = await response.json();
+            return data.nome_perfil;
+        } catch (error) {
+            console.error('Erro ao buscar perfil do usuário:', error);
+            return '-';
+        }
+    };
+
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
 
     const handleCreateOrEditUsuario = async () => {
-        const url = isEditing ? `/api/usuarios?id_usuario=${editingUsuarioId}` : '/api/usuarios';
+        const url = isEditing ? `/api/users?id_usuario=${editingUsuarioId}` : '/api/users';
         const method = isEditing ? 'PUT' : 'POST';
-
+      
         try {
             const response = await fetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...newUsuario, perfis: selectedPerfis.map(perfil => perfil.value) }),
+                body: JSON.stringify({ ...newUsuario, perfil: selectedPerfil ? selectedPerfil.value : null }),
             });
-
+      
             if (!response.ok) {
                 throw new Error(isEditing ? 'Erro ao editar usuário' : 'Erro ao criar usuário');
             }
-
+      
             const data = await response.json();
             const usuarioAtualizado = data.data;
-
+      
             if (isEditing) {
                 setUsuarios(usuarios.map(usuario => (usuario.id_usuario === editingUsuarioId ? usuarioAtualizado : usuario)));
             } else {
                 setUsuarios([...usuarios, usuarioAtualizado]);
             }
-
+      
             setIsModalOpen(false);
-            setNewUsuario({ matricula: '', nome_usuario: '', email: '', nome_completo: '', perfis: [] });
-            setSelectedPerfis([]);
+            setNewUsuario({ matricula: '', nome_usuario: '', email: '', nome_completo: '', perfil: null });
+            setSelectedPerfil(null);
             setIsEditing(false);
             setEditingUsuarioId(null);
             alert(isEditing ? 'Usuário editado com sucesso!' : 'Usuário criado com sucesso!');
@@ -106,17 +127,17 @@ export default function UsuariosAdminPage() {
             nome_usuario: usuario.nome_usuario,
             email: usuario.email,
             nome_completo: usuario.nome_completo,
-            perfis: usuario.Perfis ? usuario.Perfis.map(perfil => perfil.id_perfil) : []
+            perfil: usuario.Perfis && usuario.Perfis.length > 0 ? usuario.Perfis[0].id_perfil : null
         });
-        setSelectedPerfis(usuario.Perfis ? usuario.Perfis.map(perfil => ({ value: perfil.id_perfil, label: perfil.nome_perfil })) : []);
+        setSelectedPerfil(usuario.Perfis && usuario.Perfis.length > 0 ? { value: usuario.Perfis[0].id_perfil, label: usuario.Perfis[0].nome_perfil } : null);
         setIsEditing(true);
         setEditingUsuarioId(usuario.id_usuario);
         setIsModalOpen(true);
     };
 
-    const handleChangeSelect = (selectedOptions) => {
-        setSelectedPerfis(selectedOptions);
-        setNewUsuario({ ...newUsuario, perfis: selectedOptions.map(option => option.value) });
+    const handleChangeSelect = (selectedOption) => {
+        setSelectedPerfil(selectedOption);
+        setNewUsuario({ ...newUsuario, perfil: selectedOption ? selectedOption.value : null });
     };
 
     const handleDeleteUsuario = async (id_usuario) => {
@@ -155,7 +176,7 @@ export default function UsuariosAdminPage() {
         }
     };
 
-    const filteredUsuarios = usuarios.filter(usuario =>
+    const filteredUsuarios = usuariosComPerfil.filter(usuario =>
         usuario &&
         ((usuario.email && usuario.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (usuario.nome_completo && usuario.nome_completo.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -175,11 +196,8 @@ export default function UsuariosAdminPage() {
         return <div>Erro ao carregar dados: {error.message}</div>;
     }
 
-    const handleOpenNewUsuarioModal = () => {
-        setNewUsuario({ matricula: '', nome_usuario: '', email: '', senha: '', nome_completo: '', perfis: [] });
-        setSelectedPerfis([]);
-        setIsEditing(false);
-        setIsModalOpen(true);
+    const handleNewUsuario = () => {
+        window.location.href = '/novoRegistro'; 
     };
 
     return (
@@ -210,6 +228,7 @@ export default function UsuariosAdminPage() {
                             <tr>
                                 <th>Nome Completo</th>
                                 <th>Matrícula</th>
+                                <th>Perfil</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -218,6 +237,7 @@ export default function UsuariosAdminPage() {
                                 <tr key={usuario.id_usuario}>
                                     <td>{usuario.nome_completo}</td>
                                     <td>{usuario.matricula}</td>
+                                    <td>{usuario.nome_perfil || '-'}</td>
                                     <td>
                                         <button className="action-button" onClick={() => handleEditUsuario(usuario)}>
                                             <FaEdit />
@@ -233,44 +253,15 @@ export default function UsuariosAdminPage() {
                 </div>
                 <div id="button-container">
                     <button id="baixar-relatorio" onClick={handleDownloadReport}>Baixar Relatório</button>
-                    <button id="criar-usuario" onClick={handleOpenNewUsuarioModal}>Criar Novo Usuário</button>
+                    <button id="criar-usuario" onClick={handleNewUsuario}>Criar Novo Usuário</button>
                 </div>
             </div>
-            <Footer />
-
             {isModalOpen && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <span className="close" onClick={() => { setIsModalOpen(false); setIsEditing(false); }}>&times;</span>
-                        <h2>{isEditing ? 'Editar Usuário' : 'Criar Usuário'}</h2>
-                        <div className="form-group">
-                            <label>Matrícula:</label>
-                            <input
-                                type="text"
-                                name="matricula"
-                                value={newUsuario.matricula}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Nome de Usuário:</label>
-                            <input
-                                type="text"
-                                name="nome_usuario"
-                                value={newUsuario.nome_usuario}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Email:</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={newUsuario.email}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                        <div className="form-group">
+                <div id="modal" className="modal">
+                    <div id="modal-content" className="modal-content">
+                        <span className="close" onClick={() => setIsModalOpen(false)}>&times;</span>
+                        <h2>{isEditing ? 'Editar Usuário' : 'Criar Novo Usuário'}</h2>
+                        <form id="form-usuario">
                             <label>Nome Completo:</label>
                             <input
                                 type="text"
@@ -278,24 +269,44 @@ export default function UsuariosAdminPage() {
                                 value={newUsuario.nome_completo}
                                 onChange={handleInputChange}
                             />
-                        </div>
-                        <div className="form-group">
-                            <label>Perfis:</label>
+                            <label>Nome de Usuário:</label>
+                            <input
+                                type="text"
+                                name="nome_usuario"
+                                value={newUsuario.nome_usuario}
+                                onChange={handleInputChange}
+                            />
+                            <label>Matrícula:</label>
+                            <input
+                                type="text"
+                                name="matricula"
+                                value={newUsuario.matricula}
+                                onChange={handleInputChange}
+                            />
+                            <label>Email:</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={newUsuario.email}
+                                onChange={handleInputChange}
+                            />
+                            <label>Perfil:</label>
                             <Select
                                 options={options}
-                                value={selectedPerfis}
+                                value={selectedPerfil}
                                 onChange={handleChangeSelect}
-                                isMulti
+                                placeholder="Selecione o perfil..."
                             />
-                        </div>
-                        <div className="button-container">
-                            <button className="save-button" onClick={handleCreateOrEditUsuario}>
-                                {isEditing ? 'Salvar Alterações' : 'Criar Usuário'}
-                            </button>
-                        </div>
+                            <div className='modal-footer'>
+                                <button type="button" onClick={handleCreateOrEditUsuario}>
+                                    {isEditing ? 'Editar Usuário' : 'Criar Usuário'}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
+            <Footer />
         </>
     );
 }

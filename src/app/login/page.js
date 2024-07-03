@@ -29,8 +29,8 @@ export default function LoginPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful:', data);
-        setError(null); // Limpa qualquer erro anterior
-        // Redirecionar o usuário para a página /home após o login
+        setError(null); 
+        
         window.location.href = '/home';
       } else {
         const errorData = await response.json();

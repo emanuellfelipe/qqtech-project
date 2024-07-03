@@ -1,5 +1,3 @@
-/* src/styles/forgotConfirm.css */
-
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 body {
@@ -52,7 +50,7 @@ body {
     font-size: 18px;
     
     color: #21272a;
-    width: 100%; /* Ajusta a largura para ocupar todo o espaço disponível */
+    width: 100%; 
 }
 
 .label-and-field {

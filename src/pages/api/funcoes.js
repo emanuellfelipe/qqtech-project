@@ -1,4 +1,3 @@
-// src/pages/api/funcoes.js
 const { Funcao, ModuloFuncao, Modulo } = require('../../models/associations');
 
 export default async function handler(req, res) {

@@ -1,22 +1,22 @@
 const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
-    host: 'localhost', // ou o endereço IP ou URL do servidor do banco de dados
-    port: 5432, // Porta padrão do PostgreSQL
-    dialect: 'postgres', // Especifica que estamos usando o PostgreSQL
+    host: 'localhost', 
+    port: 5432, 
+    dialect: 'postgres',
     pool: {
-        max: 5, // Número máximo de conexões no pool
-        min: 0, // Número mínimo de conexões no pool
-        acquire: 30000, // O tempo máximo, em milissegundos, que o pool tentará obter uma conexão antes de lançar erro
-        idle: 10000 // O tempo máximo, em milissegundos, que uma conexão pode estar ociosa antes de ser fechada
+        max: 5, 
+        min: 0, 
+        acquire: 30000, 
+        idle: 10000 
     },
-    logging: false, // Desabilita a exibição de logs das queries no console
+    logging: false, 
     define: {
-        timestamps: false, // Adiciona os campos 'createdAt' e 'updatedAt' a todas as tabelas
-        underscored: true, // Utiliza o padrão underscore (snake_case) para os nomes das colunas e tabelas
-        freezeTableName: true // Evita que o Sequelize pluralize os nomes das tabelas
+        timestamps: false, 
+        underscored: true, 
+        freezeTableName: true 
     },
-    timezone: '+00:00' // Define o fuso horário para UTC
+    timezone: '+00:00' 
 });
 
 // Testar a conexão

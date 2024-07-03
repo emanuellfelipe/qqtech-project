@@ -1,4 +1,3 @@
-// src/pages/api/transacoes.js
 const { Transacao, ModuloTransacao, Modulo } = require('../../models/associations');
 
 export default async function handler(req, res) {
@@ -26,7 +25,7 @@ async function getTransacoes(req, res) {
     const transacoes = await Transacao.findAll({
       include: {
         model: Modulo,
-        through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
+        through: { attributes: [] },
       }
     });
     res.status(200).json({ success: true, data: transacoes });
@@ -64,7 +63,6 @@ async function updateTransacao(req, res) {
 
     await transacao.update({ nome_transacao, descricao });
 
-    // Atualizar módulos associados à transação
     await ModuloTransacao.associateModules(transacao.id_transacao, modulos);
 
     res.status(200).json({ success: true, data: transacao, message: 'Transação atualizada com sucesso' });
@@ -82,13 +80,11 @@ async function deleteTransacao(req, res) {
       return res.status(400).json({ error: 'id_transacao é obrigatório' });
     }
 
-    // Antes de deletar a transação, deletar os registros associados na tabela modulo_transacao
     await ModuloTransacao.destroy({ where: { id_transacao } });
 
-    // Agora podemos deletar a transação da tabela transacao
     await Transacao.destroy({ where: { id_transacao } });
 
-    res.status(204).end(); // Resposta 204 No Content
+    res.status(204).end(); 
   } catch (error) {
     console.error('Erro ao excluir transação:', error);
     res.status(500).json({ error: 'Erro ao excluir transação' });

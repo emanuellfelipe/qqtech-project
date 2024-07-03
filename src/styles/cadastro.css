@@ -1,14 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 body, html {
     margin: 0;
     padding: 0;
 }
 body {
     display: flex;
-    justify-content: space-between;
-    width: 1440px;
-    height: 1024px;
+    flex-direction: column;
+    min-height: 100vh; /* Altura mínima da tela */
     background-color: #B2FDBA;
     font-family: 'Roboto', sans-serif;
 }
@@ -18,8 +21,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: calc(100% - 210px);
-    height: calc(100% - 60px); 
+    margin-bottom: 100px; 
+    margin-top: 50px; 
 }
 #formulario {
     background-color: #fff;
@@ -90,7 +93,8 @@ select#perfis option {
     border: none;
 }
 #botao-cadastrar:hover {
-    transform: scale(1.1); 
+        
+    background-color: #019639;
     transition: transform 0.2s ease; 
 }
 #botao-cancelar {
@@ -103,7 +107,7 @@ select#perfis option {
     font-weight: bold;
 }
 #botao-cancelar:hover {
-    transform: scale(1.1); 
+    background-color:  #f2f2f2;
     transition: transform 0.2s ease; 
 }
 #botoes {
@@ -113,3 +117,42 @@ select#perfis option {
     margin-top: 20px;
 }
 
+.descricao {
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 576px) {
+    body {
+        height: auto; 
+    }
+    #main-content {
+        margin-left: 0;
+        width: 100%;
+        height: auto;
+        justify-content: center;
+    }
+    .queroquerologo-icon {
+        max-width: 300px;
+    }
+    #formulario {
+        width: 80%;
+        padding: 20px 10px;
+        margin: 20px 0;
+        margin-bottom: 150px;
+        margin-top: 80px;
+        justify-content: center;
+    }
+    form input, form select {
+        width: 95%; 
+    }
+    #botao-cadastrar, #botao-cancelar {
+        width: 100%;
+    }
+    #botoes {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

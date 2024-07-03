@@ -44,7 +44,7 @@ export default function FuncoesAdminPage() {
                     throw new Error('Erro ao buscar módulos');
                 }
                 const data = await response.json();
-                setModulos(data.data || []); // Ensure data is set correctly
+                setModulos(data.data || []);
             } catch (error) {
                 console.error('Erro ao buscar módulos:', error);
             }

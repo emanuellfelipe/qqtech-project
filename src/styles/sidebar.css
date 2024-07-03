@@ -97,7 +97,7 @@
 
 @media (max-width: 576px) {
     #menu-lateral {
-        width: 250px; /* Largura menor para mobile */
+        width: 250px;
         transform: translateX(-100%);
     }
 

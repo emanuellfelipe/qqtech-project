@@ -2,9 +2,11 @@ from fastapi import FastAPI, HTTPException, Depends, Response
 from fastapi.responses import FileResponse
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import BaseModel, EmailStr
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import func
+from sqlalchemy.orm import relationship
 import pandas as pd
 import uvicorn
 import string
@@ -13,12 +15,33 @@ from io import BytesIO
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from typing import List
 
-# Configuração do banco de dados FastAPI
+
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/postgres"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+class Perfil(Base):
+    __tablename__ = 'perfil'
+
+    id_perfil = Column(Integer, primary_key=True, index=True)
+
+
+class Modulo(Base):
+    __tablename__ = 'modulos'
+
+    id_modulo = Column(Integer, primary_key=True, index=True)
+
+class Transacao(Base):
+    __tablename__ = 'transacoes'
+
+    id_transacao = Column(Integer, primary_key=True, index=True)
+
+class Funcao(Base):
+    __tablename__ = 'funcoes'
+
+    id_funcao = Column(Integer, primary_key=True, index=True)
 
 # Definição do modelo SQLAlchemy
 class User(Base):
@@ -86,6 +109,9 @@ class ResetPasswordSchema(BaseModel):
 class Login(BaseModel):
     username: str
     password: str
+class ChartData(BaseModel):
+    labels: list
+    values: list
 
 # Funções auxiliares
 def generate_reset_code(length=8):
@@ -93,8 +119,7 @@ def generate_reset_code(length=8):
     code = ''.join(secrets.choice(alphabet) for i in range(length))
     return code
 
-# Endpoint para download de dados como Excel
-
+    
 @app.get('/download/{table_name}')
 def download(table_name: str, db: Session = Depends(get_db)):
     try:
@@ -160,8 +185,6 @@ async def reset_password(payload: ResetPasswordSchema, db: Session = Depends(get
         if not user:
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-        # Aqui você pode adicionar a lógica para verificar se o código de reset é válido
-
         # Atualizar a senha do usuário
         user.senha = new_password
         db.commit()
@@ -171,11 +194,11 @@ async def reset_password(payload: ResetPasswordSchema, db: Session = Depends(get
         print(f"Erro interno do servidor: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
-@app.options("/api/forgot-password")  # Manipulador OPTIONS para lidar com pré-verificação CORS
+@app.options("/api/forgot-password")  
 async def options_forgot_password():
     return {"Allow": "POST"}
 
-@app.options("/api/reset-password")  # Manipulador OPTIONS para lidar com pré-verificação CORS
+@app.options("/api/reset-password")  
 async def options_reset_password():
     return {"Allow": "POST"}
 
@@ -194,6 +217,23 @@ def login(login_data: Login, db: Session = Depends(get_db)):
         'email': user.email,
         'nome_completo': user.nome_completo
     }}
+
+@app.get("/chart-data", response_model=ChartData)
+def get_chart_data(db: Session = Depends(get_db)):
+    try:
+        user_count = db.query(func.count(User.id_usuario)).scalar()
+        profile_count = db.query(func.count(Perfil.id_perfil)).scalar()
+        module_count = db.query(func.count(Modulo.id_modulo)).scalar()
+        transaction_count = db.query(func.count(Transacao.id_transacao)).scalar()
+        function_count = db.query(func.count(Funcao.id_funcao)).scalar()
+
+        labels = ["Usuários", "Perfis", "Módulos", "Transações", "Funções"]
+        values = [user_count, profile_count, module_count, transaction_count, function_count]
+
+        return {"labels": labels, "values": values}
+    except Exception as e:
+        print(f"Erro ao obter dados do gráfico: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao obter dados do gráfico")
 
 # Execução do aplicativo com uvicorn
 if __name__ == "__main__":

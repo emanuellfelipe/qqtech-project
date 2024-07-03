@@ -44,7 +44,7 @@ export default function PerfisAdminPage() {
                     throw new Error('Erro ao buscar módulos');
                 }
                 const data = await response.json();
-                setModulos(data.data || []); // Ensure data is set correctly
+                setModulos(data.data || []); 
             } catch (error) {
                 console.error('Erro ao buscar módulos:', error);
             }
@@ -265,6 +265,7 @@ export default function PerfisAdminPage() {
                                     value={selectedModulos}
                                     onChange={handleChangeSelect}
                                     options={options}
+                                    placeholder="Selecione os Módulos"
                                 />
                             </div>
                             <div className="modal-footer">

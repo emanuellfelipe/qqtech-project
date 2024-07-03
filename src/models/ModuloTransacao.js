@@ -1,5 +1,3 @@
-// src/models/ModuloTransacao.js
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const Transacao = require('./Transacao');
@@ -17,8 +15,8 @@ const ModuloTransacao = sequelize.define('ModuloTransacao', {
     references: {
       model: Transacao,
       key: 'id_transacao',
-      onDelete: 'CASCADE', // Define ação de deleção em cascata
-      onUpdate: 'CASCADE' // Define ação de atualização em cascata, se necessário
+      onDelete: 'CASCADE', 
+      onUpdate: 'CASCADE' 
     },
   },
   id_modulo: {
@@ -27,8 +25,8 @@ const ModuloTransacao = sequelize.define('ModuloTransacao', {
     references: {
       model: Modulo,
       key: 'id_modulo',
-      onDelete: 'CASCADE', // Define ação de deleção em cascata
-      onUpdate: 'CASCADE' // Define ação de atualização em cascata, se necessário
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
   },
 }, {
@@ -36,13 +34,11 @@ const ModuloTransacao = sequelize.define('ModuloTransacao', {
   timestamps: false,
 });
 
-// Função para associar módulos a uma transação
 ModuloTransacao.associateModules = async function (id_transacao, modulos) {
   try {
-    // Remover todos os módulos associados à transação
+
     await ModuloTransacao.destroy({ where: { id_transacao } });
 
-    // Associar os novos módulos à transação
     const moduloTransacoes = modulos.map(id_modulo => ({ id_transacao, id_modulo }));
     await ModuloTransacao.bulkCreate(moduloTransacoes);
   } catch (error) {

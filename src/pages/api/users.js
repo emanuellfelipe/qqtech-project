@@ -1,4 +1,3 @@
-// src/pages/api/usuarios.js
 const { Usuario, Perfil, PerfilUsuario } = require('../../models/associations');
 
 export default async function handler(req, res) {
@@ -26,7 +25,7 @@ async function getUsuarios(req, res) {
     const usuarios = await Usuario.findAll({
       include: {
         model: Perfil,
-        through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
+        through: { attributes: [] }, 
       }
     });
     res.status(200).json({ success: true, data: usuarios });
@@ -38,11 +37,12 @@ async function getUsuarios(req, res) {
 
 async function createUsuario(req, res) {
   try {
-    const { nome_usuario, email, id_perfil } = req.body;
-    const usuario = await Usuario.create({ nome_usuario, email });
+    const { nome_usuario, email, senha, nome_completo, matricula, perfil } = req.body;
+    const usuario = await Usuario.create({ nome_usuario, email, senha, nome_completo, matricula });
 
-    if (id_perfil) {
-      await PerfilUsuario.associateSingleUser(usuario.id_usuario, id_perfil);
+    if (perfil) {
+      const perfilId = parseInt(perfil, 10);
+      await PerfilUsuario.create({ id_usuario: usuario.id_usuario, id_perfil: perfilId });
     }
 
     res.status(201).json({ success: true, data: usuario, message: 'Usuário criado com sucesso' });
@@ -55,18 +55,21 @@ async function createUsuario(req, res) {
 async function updateUsuario(req, res) {
   try {
     const { id_usuario } = req.query;
-    const { nome_usuario, email, id_perfil } = req.body;
+    const { nome_usuario, email, senha, nome_completo, perfil } = req.body;
 
     const usuario = await Usuario.findByPk(id_usuario);
     if (!usuario) {
       return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
     }
 
-    await usuario.update({ nome_usuario, email });
+    await usuario.update({ nome_usuario, email, senha, nome_completo });
 
-    // Atualizar o perfil associado ao usuário
-    if (id_perfil) {
-      await PerfilUsuario.associateSingleUser(usuario.id_usuario, id_perfil);
+    if (perfil) {
+      const perfilId = parseInt(perfil, 10);
+      await PerfilUsuario.update(
+        { id_perfil: perfilId },
+        { where: { id_usuario: usuario.id_usuario } }
+      );
     }
 
     res.status(200).json({ success: true, data: usuario, message: 'Usuário atualizado com sucesso' });
@@ -84,13 +87,10 @@ async function deleteUsuario(req, res) {
       return res.status(400).json({ error: 'id_usuario é obrigatório' });
     }
 
-    // Antes de deletar o usuário, deletar os registros associados na tabela perfil_usuario
     await PerfilUsuario.destroy({ where: { id_usuario } });
-
-    // Agora podemos deletar o usuário da tabela usuario
     await Usuario.destroy({ where: { id_usuario } });
 
-    res.status(204).end(); // Resposta 204 No Content
+    res.status(204).end();
   } catch (error) {
     console.error('Erro ao excluir usuário:', error);
     res.status(500).json({ error: 'Erro ao excluir usuário' });

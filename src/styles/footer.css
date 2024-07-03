@@ -2,7 +2,7 @@ footer {
     position: fixed;
     bottom: 0;
     left: 248px;
-    width: calc(100% - 282px);
+    width: calc(100% - 248px);
     height: 60px;   
     background-color: #025400;
     color: #fff;
@@ -33,6 +33,6 @@ footer {
         left: 0;
         width: 100%;
         
-        padding: 0 30px; /* Reduce padding for mobile */
+        padding: 0 30px; 
     }
 }

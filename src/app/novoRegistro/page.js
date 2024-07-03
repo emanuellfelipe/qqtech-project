@@ -1,5 +1,4 @@
 'use client';
-// src/pages/cadastro.js
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -63,7 +62,7 @@ export default function CadastroPage() {
                 perfil: [perfil]
             });
             setSuccessMessage('Usuário cadastrado com sucesso!');
-            clearForm(); // Limpa os campos do formulário após o cadastro
+            clearForm(); 
         } catch (error) {
             console.error('Erro ao cadastrar usuário:', error);
             setErrorMessage('Erro ao cadastrar usuário. Por favor, tente novamente.');
@@ -81,7 +80,7 @@ export default function CadastroPage() {
                 <div id="formulario">
                     <Image src="/images/logo-forms.png" alt="Forms Logo" width={400} height={75} />
                     <h1 style={{ marginBottom: '8px' }}>Por favor Insira os Dados</h1>
-                    <p style={{ marginTop: '0' }}>Realize o cadastro para o colaborador acessar a Plataforma</p>
+                    <p className='descricao'>Realize o cadastro para o colaborador acessar a Plataforma</p>
                     <form onSubmit={handleFormSubmit}>
                         <label htmlFor="matricula">Matrícula</label>
                         <input

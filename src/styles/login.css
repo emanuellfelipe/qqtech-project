@@ -210,7 +210,7 @@ select:focus {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    width: 100%; /* Ajuste para o botão ocupar toda a largura */
+    width: 100%;
 }
 
 .button-text {
@@ -228,8 +228,8 @@ select:focus {
     .field,
     .field1,
     .button {
-        width: calc(100% - 32px); /* Ajuste para manter o mesmo tamanho */
-        max-width: 450px; /* Ajuste para ser 1.5x maior */
+        width: calc(100% - 32px); 
+        max-width: 450px;
     }
 }
 

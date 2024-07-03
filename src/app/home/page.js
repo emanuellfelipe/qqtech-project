@@ -20,6 +20,7 @@ export default function HomeAdminPage() {
         </div>
         <nav>
           <ul>
+            <li className="menu"><button onClick={() => redirectToPage('/dashboards')}>Dashboards</button></li>
             <li className="menu"><button onClick={() => redirectToPage('/perfis')}>Perfis</button></li>
             <li className="menu"><button onClick={() => redirectToPage('/registros')}>Usuários</button></li>
             <li className="menu"><button onClick={() => redirectToPage('/modulos')}>Módulos</button></li>

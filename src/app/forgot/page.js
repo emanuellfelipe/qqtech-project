@@ -22,9 +22,9 @@ export default function ForgotPasswordPage() {
     
             if (response.ok) {
                 const data = await response.json();
-                setResetCode(data.reset_code); // Armazena temporariamente o código retornado
+                setResetCode(data.reset_code); 
                 setMessage('Email enviado com sucesso!');
-                // Redireciona para a página de confirmação com o código armazenado
+        
                 window.location.href = `/forgotConfirm?email=${email}`;
             } else {
                 const errorData = await response.json();

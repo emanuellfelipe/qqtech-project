@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { FaBars } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
-import "/src/styles/sidebar.css"; // Certifique-se de que o caminho esteja correto
+import "/src/styles/sidebar.css"; 
 
 export default function Sidebar() {
     const [currentRoute, setCurrentRoute] = useState('');
@@ -21,6 +21,8 @@ export default function Sidebar() {
     };
 
     const isModuleActive = currentRoute === '/modulos' || currentRoute === '/transacoes' || currentRoute === '/funcoes';
+
+    const isUsersActive = currentRoute === '/registros' || currentRoute === '/novoRegistro'; 
 
     const handleLogout = () => {
         window.location.href = '/login';
@@ -52,16 +54,22 @@ export default function Sidebar() {
                     <Image src="/images/modules-icon.png" alt="Modules" width={20} height={20} /> Módulos
                 </button>
                 <button
-                    className={`botao-menu ${currentRoute === '/registros' ? 'active' : ''}`}
+                    className={`botao-menu ${isUsersActive ? 'active' : ''}`} 
                     onClick={() => handleNavigation('/registros')}
                 >
-                    <Image src="/images/profiles-icon.png" alt="Users" width={20} height={20} /> Usuários
+                    <Image src="/images/people-outline.png" alt="Users" width={20} height={20} /> Usuários
                 </button>
                 <button
                     className={`botao-menu ${currentRoute === '/perfis' ? 'active' : ''}`}
                     onClick={() => handleNavigation('/perfis')}
                 >
                     <Image src="/images/perfis-icon.png" alt="Profiles" width={20} height={20} /> Perfis
+                </button>
+                <button
+                    className={`botao-menu ${currentRoute === '/dashboards' ? 'active' : ''}`}
+                    onClick={() => handleNavigation('/dashboards')}
+                >
+                    <Image src="/images/speedometer-outline.png" alt="Profiles" width={20} height={20} /> Dashboards
                 </button>
             </div>
         </div>

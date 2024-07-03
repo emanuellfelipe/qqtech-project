@@ -1,5 +1,5 @@
 import React from 'react';
-import '/src/styles/input.css'; // Importação corrigida do CSS
+import '/src/styles/input.css'; 
 
 const InputLabel = ({ id, label, type, placeholder, invalid }) => {
   const inputClass = `form-input ${invalid ? 'invalid' : ''}`;

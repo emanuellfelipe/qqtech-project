@@ -10,7 +10,6 @@ export default function ForgotConfirmPage() {
     const [message, setMessage] = useState('');
     const [email, setEmail] = useState('');
 
-    // Exemplo de como você poderia recuperar o email do localStorage
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const userEmail = urlParams.get('email');
@@ -31,7 +30,7 @@ export default function ForgotConfirmPage() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email, // Passa o email junto com o código e a nova senha
+                email, 
                 code,
                 newPassword
             })
@@ -40,7 +39,7 @@ export default function ForgotConfirmPage() {
         const data = await response.json();
         if (response.ok) {
             setMessage("Senha redefinida com sucesso.");
-            // Redireciona para a página de login após a redefinição da senha
+            
             window.location.href = '/login';
         } else {
             setMessage(data.detail || "Erro ao redefinir senha.");

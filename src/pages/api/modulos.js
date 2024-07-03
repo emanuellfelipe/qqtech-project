@@ -1,4 +1,3 @@
-// src/pages/api/modulos.js
 const { Modulo, ModuloFuncao, ModuloTransacao, Funcao, Transacao } = require('../../models/associations');
 
 export default async function handler(req, res) {
@@ -27,11 +26,11 @@ async function getModulos(req, res) {
       include: [
         {
           model: Funcao,
-          through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
+          through: { attributes: [] }, 
         },
         {
           model: Transacao,
-          through: { attributes: [] }, // Para excluir os atributos da tabela intermediária
+          through: { attributes: [] }, 
         }
       ]
     });
@@ -74,7 +73,6 @@ async function updateModulo(req, res) {
 
     await modulo.update({ nome_modulo, descricao });
 
-    // Atualizar funções e transações associadas ao módulo
     await ModuloFuncao.associateFunctions(modulo.id_modulo, funcoes);
     await ModuloTransacao.associateTransactions(modulo.id_modulo, transacoes);
 
@@ -93,7 +91,6 @@ async function deleteModulo(req, res) {
       return res.status(400).json({ error: 'id_modulo é obrigatório' });
     }
 
-    // Verificar se o módulo está associado a alguma função ou transação
     const moduloFuncao = await ModuloFuncao.findOne({ where: { id_modulo } });
     const moduloTransacao = await ModuloTransacao.findOne({ where: { id_modulo } });
 
@@ -101,14 +98,12 @@ async function deleteModulo(req, res) {
       return res.status(400).json({ error: 'Não é possível excluir o módulo pois está associado a uma função ou transação' });
     }
 
-    // Antes de deletar o módulo, deletar os registros associados nas tabelas ModuloFuncao e ModuloTransacao
     await ModuloFuncao.destroy({ where: { id_modulo } });
     await ModuloTransacao.destroy({ where: { id_modulo } });
 
-    // Agora podemos deletar o módulo da tabela Modulo
     await Modulo.destroy({ where: { id_modulo } });
 
-    res.status(204).end(); // Resposta 204 No Content
+    res.status(204).end(); 
   } catch (error) {
     console.error('Erro ao excluir módulo:', error);
     res.status(500).json({ error: 'Erro ao excluir módulo' });

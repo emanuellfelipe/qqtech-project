@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import "/src/styles/footer.css"; // Certifique-se de que o caminho esteja correto
+import "/src/styles/footer.css"; 
 
 export default function Footer() {
     return (
