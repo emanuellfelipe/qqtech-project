@@ -47,11 +47,9 @@ async function createModulo(req, res) {
     const modulo = await Modulo.create({ nome_modulo, descricao });
 
     if (funcoes && funcoes.length > 0) {
-      await ModuloFuncao.associateFunctions(modulo.id_modulo, funcoes);
     }
 
     if (transacoes && transacoes.length > 0) {
-      await ModuloTransacao.associateTransactions(modulo.id_modulo, transacoes);
     }
 
     res.status(201).json({ success: true, data: modulo, message: 'Módulo criado com sucesso' });
@@ -72,9 +70,6 @@ async function updateModulo(req, res) {
     }
 
     await modulo.update({ nome_modulo, descricao });
-
-    await ModuloFuncao.associateFunctions(modulo.id_modulo, funcoes);
-    await ModuloTransacao.associateTransactions(modulo.id_modulo, transacoes);
 
     res.status(200).json({ success: true, data: modulo, message: 'Módulo atualizado com sucesso' });
   } catch (error) {

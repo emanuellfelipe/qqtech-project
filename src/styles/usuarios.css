@@ -115,29 +115,29 @@ body {
     color: #960101;
 }
 
-#button-container {
+.button-container {
     display: flex;
     justify-content: space-between;
     margin-top: 20px; 
 }
 
-#button-container button {
+.button-container button {
     width: 48%; 
     padding: 10px;
 }
 
-#criar-usuario {
+.criar-usuario {
     background-color: #01ab45;
     color: white;
     border-radius: 12px;
     border: none;
 }
 
-#criar-usuario:hover {
+.criar-usuario:hover {
     background-color: #019639;
 }
 
-#baixar-relatorio {
+.baixar-relatorio {
     background-color: #ffffff;
     color: #01ab45;
     border: 1px solid #01ab45;
@@ -145,7 +145,7 @@ body {
     cursor: pointer;
 }
 
-#baixar-relatorio:hover {
+.baixar-relatorio:hover {
     background-color: #f2f2f2;
     color: #019639;
     border-color: #019639;

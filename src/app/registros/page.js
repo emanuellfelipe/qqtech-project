@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Head from 'next/head';
 import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
@@ -21,45 +21,40 @@ export default function UsuariosAdminPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchUsuarios = async () => {
-            try {
-                const response = await fetch('/api/users');
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar usuários');
-                }
-                const data = await response.json();
-                const usuariosData = data.data || [];
-                const usuariosComPerfilData = await Promise.all(usuariosData.map(async (usuario) => {
-                    const nomePerfil = await fetchPerfilUsuario(usuario.id_usuario);
-                    return { ...usuario, nome_perfil: nomePerfil };
-                }));
-
-                setUsuariosComPerfil(usuariosComPerfilData);
-                setIsLoading(false);
-            } catch (error) {
-                console.error('Erro ao buscar usuários:', error);
-                setError(error);
-                setIsLoading(false);
+    const fetchUsuarios = useCallback(async () => {
+        try {
+            const response = await fetch('/api/users');
+            if (!response.ok) {
+                throw new Error('Erro ao buscar usuários');
             }
-        };
+            const data = await response.json();
+            const usuariosData = data.data || [];
+            const usuariosComPerfilData = await Promise.all(usuariosData.map(async (usuario) => {
+                const nomePerfil = await fetchPerfilUsuario(usuario.id_usuario);
+                return { ...usuario, nome_perfil: nomePerfil };
+            }));
 
-        const fetchPerfis = async () => {
-            try {
-                const response = await fetch('/api/perfis');
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar perfis');
-                }
-                const data = await response.json();
-                setPerfis(data.data || []);
-            } catch (error) {
-                console.error('Erro ao buscar perfis:', error);
+            setUsuariosComPerfil(usuariosComPerfilData);
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Erro ao buscar usuários:', error);
+            setError(error);
+            setIsLoading(false);
+        }
+    }, []); 
+
+    const fetchPerfis = async () => {
+        try {
+            const response = await fetch('/api/perfis');
+            if (!response.ok) {
+                throw new Error('Erro ao buscar perfis');
             }
-        };
-
-        fetchUsuarios();
-        fetchPerfis();
-    }, []);
+            const data = await response.json();
+            setPerfis(data.data || []);
+        } catch (error) {
+            console.error('Erro ao buscar perfis:', error);
+        }
+    };
 
     const fetchPerfilUsuario = async (idUsuario) => {
         try {
@@ -74,6 +69,11 @@ export default function UsuariosAdminPage() {
             return '-';
         }
     };
+
+    useEffect(() => {
+        fetchUsuarios();
+        fetchPerfis();
+    }, [fetchUsuarios]); 
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
@@ -99,18 +99,13 @@ export default function UsuariosAdminPage() {
             const data = await response.json();
             const usuarioAtualizado = data.data;
       
-            if (isEditing) {
-                setUsuarios(usuarios.map(usuario => (usuario.id_usuario === editingUsuarioId ? usuarioAtualizado : usuario)));
-            } else {
-                setUsuarios([...usuarios, usuarioAtualizado]);
-            }
-      
             setIsModalOpen(false);
             setNewUsuario({ matricula: '', nome_usuario: '', email: '', nome_completo: '', perfil: null });
             setSelectedPerfil(null);
             setIsEditing(false);
             setEditingUsuarioId(null);
             alert(isEditing ? 'Usuário editado com sucesso!' : 'Usuário criado com sucesso!');
+            fetchUsuarios(); 
         } catch (error) {
             console.error(isEditing ? 'Erro ao editar usuário:' : 'Erro ao criar usuário:', error);
         }
@@ -147,6 +142,7 @@ export default function UsuariosAdminPage() {
                     method: 'DELETE'
                 });
                 setUsuarios(usuarios.filter(usuario => usuario.id_usuario !== id_usuario));
+                fetchUsuarios(); 
             } catch (error) {
                 console.error('Erro ao excluir usuário:', error);
                 alert('Erro ao excluir usuário. Tente novamente.');
@@ -195,10 +191,6 @@ export default function UsuariosAdminPage() {
     if (error) {
         return <div>Erro ao carregar dados: {error.message}</div>;
     }
-
-    const handleNewUsuario = () => {
-        window.location.href = '/novoRegistro'; 
-    };
 
     return (
         <>
@@ -251,62 +243,69 @@ export default function UsuariosAdminPage() {
                         </tbody>
                     </table>
                 </div>
-                <div id="button-container">
-                    <button id="baixar-relatorio" onClick={handleDownloadReport}>Baixar Relatório</button>
-                    <button id="criar-usuario" onClick={handleNewUsuario}>Criar Novo Usuário</button>
+                <div className="button-container">
+                <button className="baixar-relatorio" onClick={handleDownloadReport}>
+                        Baixar Relatório
+                    </button>
+                    <button className="criar-usuario" onClick={() => window.location.href = '/novoRegistro'}>
+                        Criar Novo Usuário
+                    </button>
                 </div>
-            </div>
-            {isModalOpen && (
-                <div id="modal" className="modal">
-                    <div id="modal-content" className="modal-content">
-                        <span className="close" onClick={() => setIsModalOpen(false)}>&times;</span>
-                        <h2>{isEditing ? 'Editar Usuário' : 'Criar Novo Usuário'}</h2>
-                        <form id="form-usuario">
-                            <label>Nome Completo:</label>
-                            <input
-                                type="text"
-                                name="nome_completo"
-                                value={newUsuario.nome_completo}
-                                onChange={handleInputChange}
-                            />
-                            <label>Nome de Usuário:</label>
-                            <input
-                                type="text"
-                                name="nome_usuario"
-                                value={newUsuario.nome_usuario}
-                                onChange={handleInputChange}
-                            />
-                            <label>Matrícula:</label>
-                            <input
-                                type="text"
-                                name="matricula"
-                                value={newUsuario.matricula}
-                                onChange={handleInputChange}
-                            />
-                            <label>Email:</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={newUsuario.email}
-                                onChange={handleInputChange}
-                            />
-                            <label>Perfil:</label>
-                            <Select
-                                options={options}
-                                value={selectedPerfil}
-                                onChange={handleChangeSelect}
-                                placeholder="Selecione o perfil..."
-                            />
-                            <div className='modal-footer'>
-                                <button type="button" onClick={handleCreateOrEditUsuario}>
-                                    {isEditing ? 'Editar Usuário' : 'Criar Usuário'}
-                                </button>
-                            </div>
-                        </form>
+                {isModalOpen && (
+                    <div id="modal" className="modal">
+                        <div className="modal-content">
+                            <span className="close" onClick={() => setIsModalOpen(false)}>
+                                &times;
+                            </span>
+                            <h2>{isEditing ? 'Editar Usuário' : 'Criar Novo Usuário'}</h2>
+                            <form>
+                                <label htmlFor="nome_usuario">Nome de Usuário:</label>
+                                <input
+                                    type="text"
+                                    id="nome_usuario"
+                                    name="nome_usuario"
+                                    value={newUsuario.nome_usuario}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                                <label htmlFor="email">Email:</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={newUsuario.email}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                                <label htmlFor="nome_completo">Nome Completo:</label>
+                                <input
+                                    type="text"
+                                    id="nome_completo"
+                                    name="nome_completo"
+                                    value={newUsuario.nome_completo}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                                <label htmlFor="perfil">Perfil:</label>
+                                <Select
+                                    id="perfil"
+                                    name="perfil"
+                                    value={selectedPerfil}
+                                    onChange={handleChangeSelect}
+                                    options={options}
+                                    required
+                                />
+                                <div className="modal-footer">
+                                    <button type="button" onClick={handleCreateOrEditUsuario}>
+                                        {isEditing ? 'Salvar Alterações' : 'Criar Usuário'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
-            <Footer />
+                )}
+                <Footer />
+            </div>
         </>
     );
 }

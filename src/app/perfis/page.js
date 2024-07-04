@@ -61,7 +61,7 @@ export default function PerfisAdminPage() {
     const handleCreateOrEditPerfil = async () => {
         const url = isEditing ? `/api/perfis?id_perfil=${editingPerfilId}` : '/api/perfis';
         const method = isEditing ? 'PUT' : 'POST';
-
+    
         try {
             const response = await fetch(url, {
                 method: method,
@@ -70,26 +70,28 @@ export default function PerfisAdminPage() {
                 },
                 body: JSON.stringify({ ...newPerfil, modulos: selectedModulos.map(modulo => modulo.value) }),
             });
-
+    
             if (!response.ok) {
                 throw new Error(isEditing ? 'Erro ao editar perfil' : 'Erro ao criar perfil');
             }
-
+    
             const data = await response.json();
             const perfilAtualizado = data.data;
-
+    
             if (isEditing) {
                 setPerfis(perfis.map(perfil => (perfil.id_perfil === editingPerfilId ? perfilAtualizado : perfil)));
             } else {
                 setPerfis([...perfis, perfilAtualizado]);
             }
-
+    
             setIsModalOpen(false);
             setNewPerfil({ nome_perfil: '', descricao: '', modulos: [] });
             setSelectedModulos([]);
             setIsEditing(false);
             setEditingPerfilId(null);
             alert(isEditing ? 'Perfil editado com sucesso!' : 'Perfil criado com sucesso!');
+
+            window.location.reload();
         } catch (error) {
             console.error(isEditing ? 'Erro ao editar perfil:' : 'Erro ao criar perfil:', error);
         }

@@ -66,10 +66,10 @@ export default function TransacoesAdminPage() {
         window.location.href = '/funcoes';
       };
     
-    const handleCreateOrEditTransacao = async () => {
+      const handleCreateOrEditTransacao = async () => {
         const url = isEditing ? `/api/transacoes?id_transacao=${editingTransacaoId}` : '/api/transacoes';
         const method = isEditing ? 'PUT' : 'POST';
-
+    
         try {
             const response = await fetch(url, {
                 method: method,
@@ -78,26 +78,28 @@ export default function TransacoesAdminPage() {
                 },
                 body: JSON.stringify({ ...newTransacao, modulos: selectedModulos.map(modulo => modulo.value) }),
             });
-
+    
             if (!response.ok) {
                 throw new Error(isEditing ? 'Erro ao editar transacao' : 'Erro ao criar transacao');
             }
-
+    
             const data = await response.json();
             const transacaoAtualizada = data.data;
-
+    
             if (isEditing) {
                 setTransacoes(transacoes.map(transacao => (transacao.id_transacao === editingTransacaoId ? transacaoAtualizada : transacao)));
             } else {
                 setTransacoes([...transacoes, transacaoAtualizada]);
             }
-
+    
             setIsModalOpen(false);
             setNewTransacao({ nome_transacao: '', descricao: '', modulos: [] });
             setSelectedModulos([]);
             setIsEditing(false);
             setEditingTransacaoId(null);
             alert(isEditing ? 'Transação editada com sucesso!' : 'Transação criada com sucesso!');
+
+            window.location.reload();
         } catch (error) {
             console.error(isEditing ? 'Erro ao editar transacao:' : 'Erro ao criar transacao:', error);
         }

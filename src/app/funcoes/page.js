@@ -36,7 +36,7 @@ export default function FuncoesAdminPage() {
                 setIsLoading(false);
             }
         };
-
+    
         const fetchModulos = async () => {
             try {
                 const response = await fetch('/api/modulos');
@@ -49,10 +49,10 @@ export default function FuncoesAdminPage() {
                 console.error('Erro ao buscar módulos:', error);
             }
         };
-
+    
         fetchFuncoes();
         fetchModulos();
-    }, []);
+    }, [isEditing]);
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
@@ -66,10 +66,10 @@ export default function FuncoesAdminPage() {
       };
 
 
-    const handleCreateOrEditFuncao = async () => {
+      const handleCreateOrEditFuncao = async () => {
         const url = isEditing ? `/api/funcoes?id_funcao=${editingFuncaoId}` : '/api/funcoes';
         const method = isEditing ? 'PUT' : 'POST';
-
+    
         try {
             const response = await fetch(url, {
                 method: method,
@@ -78,26 +78,28 @@ export default function FuncoesAdminPage() {
                 },
                 body: JSON.stringify({ ...newFuncao, modulos: selectedModulos.map(modulo => modulo.value) }),
             });
-
+    
             if (!response.ok) {
                 throw new Error(isEditing ? 'Erro ao editar função' : 'Erro ao criar função');
             }
-
+    
             const data = await response.json();
             const funcaoAtualizada = data.data;
-
+    
             if (isEditing) {
                 setFuncoes(funcoes.map(funcao => (funcao.id_funcao === editingFuncaoId ? funcaoAtualizada : funcao)));
             } else {
                 setFuncoes([...funcoes, funcaoAtualizada]);
             }
-
+    
             setIsModalOpen(false);
             setNewFuncao({ nome_funcoes: '', descricao: '', modulos: [] });
             setSelectedModulos([]);
             setIsEditing(false);
             setEditingFuncaoId(null);
             alert(isEditing ? 'Função editada com sucesso!' : 'Função criada com sucesso!');
+
+            window.location.reload();
         } catch (error) {
             console.error(isEditing ? 'Erro ao editar função:' : 'Erro ao criar função:', error);
         }
@@ -141,7 +143,7 @@ export default function FuncoesAdminPage() {
 
     const handleDownloadReport = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/download/funcao`);
+            const response = await fetch(`http://localhost:5000/download/funcoes`);
             if (!response.ok) {
                 throw new Error('Erro ao baixar o relatório');
             }

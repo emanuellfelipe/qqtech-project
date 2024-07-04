@@ -26,8 +26,17 @@ export default function HomeAdminPage() {
             <li className="menu"><button onClick={() => redirectToPage('/modulos')}>Módulos</button></li>
           </ul>
         </nav>
+        <div className="mobile-dropdown">
+          <input type="checkbox" id="dropdownCheckbox" className="dropdown-checkbox" />
+          <label htmlFor="dropdownCheckbox" className="dropdown-toggle">Menu</label>
+          <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li onClick={() => redirectToPage('/dashboards')}>Dashboards</li>
+            <li onClick={() => redirectToPage('/modulos')}>Módulos</li>
+            <li onClick={() => redirectToPage('/perfis')}>Perfis</li>
+            <li onClick={() => redirectToPage('/usuarios')}>Usuários</li>
+          </ul>
+        </div>
         <div id="icons">
-          <Image className="icon-profile" src="/images/menu-icon.png" alt="Menu Icon" width={32} height={32} />
           <FiLogOut className="menu-icon" size={18} onClick={handleLogout} />
         </div>
       </header>
